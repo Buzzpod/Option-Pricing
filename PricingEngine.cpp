@@ -5,41 +5,72 @@
 #include "PricingEngine.hpp"
 #include "AsianOption.hpp"
 
-double generateRandomPrice(double currentPrice, double drift, double volatility,
-                           double deltaTime, std::mt19937 &randomEngine) {
-    std::normal_distribution<double> normalDist(0, 1);
-    double dWt = normalDist(randomEngine);
-    return currentPrice * std::exp((drift - 0.5 * volatility * volatility) * deltaTime +
-                                   volatility * std::sqrt(deltaTime) * dWt);
-}
-
-double PricingEngine::calculatePrice(const Option &option, double spot_price, double risk_free_rate, double volatility) {
+double PricingEngine::calculatePriceNaive(const Option &option, double spot, double riskFreeRate, double volatility, unsigned int numSimulations) {
     const AsianOption *asianOption = dynamic_cast<const AsianOption *>(&option);
 
     if (asianOption) {
-        double deltaTime = asianOption->getExpiry() / asianOption->getAveragingPeriods();
-        unsigned int numSimulations = 100000;
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::normal_distribution<double> dist(0.0, 1.0);
+
+        double dt = asianOption->getExpiry() / asianOption->getAveragingPeriods();
         double sumPayoffs = 0.0;
 
-        std::mt19937 randomEngine(static_cast<long unsigned int>(std::time(0)));
-
         for (unsigned int i = 0; i < numSimulations; ++i) {
-            double sumPrices = 0.0;
-            double price = spot_price;
+            double avgSpot = 0.0;
 
             for (unsigned int j = 0; j < asianOption->getAveragingPeriods(); ++j) {
-                price = generateRandomPrice(price, risk_free_rate, volatility, deltaTime, randomEngine);
-                sumPrices += price;
+                double randNormal = dist(gen);
+                double spotPath = spot * std::exp((riskFreeRate - 0.5 * volatility * volatility) * (j * dt) +
+                                                  volatility * std::sqrt(j * dt) * randNormal);
+                avgSpot += spotPath;
             }
 
-            double averagePrice = sumPrices / asianOption->getAveragingPeriods();
-            sumPayoffs += asianOption->payoff(averagePrice);
+            avgSpot /= static_cast<double>(asianOption->getAveragingPeriods());
+            sumPayoffs += option.payoff(avgSpot);
         }
 
-        double optionPrice = (sumPayoffs / numSimulations) * std::exp(-risk_free_rate * asianOption->getExpiry());
-        return optionPrice;
-    } else {
-        std::cout << "Unsupported option type" << std::endl;
-        return 0.0;
+        double price = (sumPayoffs / static_cast<double>(numSimulations)) * std::exp(-riskFreeRate * option.getExpiry());
+        return price;
     }
+
+}
+
+double PricingEngine::calculatePriceAntithetic(const Option &option, double spot, double riskFreeRate, double volatility, unsigned int numSimulations) {
+    const AsianOption *asianOption = dynamic_cast<const AsianOption *>(&option);
+
+    if (asianOption) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::normal_distribution<double> dist(0.0, 1.0);
+
+        double dt = asianOption->getExpiry() / asianOption->getAveragingPeriods();
+        double sumPayoffs = 0.0;
+
+        for (unsigned int i = 0; i < numSimulations; ++i) {
+            double avgSpot = 0.0;
+            double avgSpotAntithetic = 0.0;
+
+            for (unsigned int j = 0; j < asianOption->getAveragingPeriods(); ++j) {
+                double randNormal = dist(gen);
+                double spotPath = spot * std::exp((riskFreeRate - 0.5 * volatility * volatility) * (j * dt) +
+                                                  volatility * std::sqrt(j * dt) * randNormal);
+                double spotPathAntithetic = spot * std::exp((riskFreeRate - 0.5 * volatility * volatility) * (j * dt) -
+                                                            volatility * std::sqrt(j * dt) * randNormal);
+
+                avgSpot += spotPath;
+                avgSpotAntithetic += spotPathAntithetic;
+            }
+
+            avgSpot /= static_cast<double>(asianOption->getAveragingPeriods());
+            avgSpotAntithetic /= static_cast<double>(asianOption->getAveragingPeriods());
+
+            sumPayoffs += (option.payoff(avgSpot) + option.payoff(avgSpotAntithetic)) / 2.0;
+        }
+
+        double price = (sumPayoffs / static_cast<double>(numSimulations)) * std::exp(-riskFreeRate * option.getExpiry());
+        return price;
+    }
+
 }

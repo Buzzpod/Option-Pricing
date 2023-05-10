@@ -1,14 +1,10 @@
-#ifndef PRICINGENGINE_HPP
-#define PRICINGENGINE_HPP
+#pragma once
 
 #include "Option.hpp"
 
 class PricingEngine {
 public:
-    double calculatePrice(const Option &option, double spot_price, double risk_free_rate, double volatility);
-
-private:
-    // Add any necessary helper methods for pricing calculations here
+    static double calculatePriceNaive(const Option &option, double spot, double riskFreeRate, double volatility, unsigned int numSimulations);
+    static double calculatePriceAntithetic(const Option &option, double spot, double riskFreeRate, double volatility, unsigned int numSimulations);
 };
 
-#endif // PRICINGENGINE_HPP
