@@ -1,5 +1,4 @@
 #include <cmath>
-#include <ctime>
 #include <iostream>
 #include <random>
 #include "PricingEngine.hpp"
@@ -19,11 +18,12 @@ double PricingEngine::calculatePriceNaive(const Option &option, double spot, dou
 
         for (unsigned int i = 0; i < numSimulations; ++i) {
             double avgSpot = 0.0;
+            double spotPath = spot;
 
             for (unsigned int j = 0; j < asianOption->getAveragingPeriods(); ++j) {
                 double randNormal = dist(gen);
-                double spotPath = spot * std::exp((riskFreeRate - 0.5 * volatility * volatility) * (j * dt) +
-                                                  volatility * std::sqrt(j * dt) * randNormal);
+                spotPath *= std::exp((riskFreeRate - 0.5 * volatility * volatility) * dt +
+                                     volatility * std::sqrt(dt) * randNormal);
                 avgSpot += spotPath;
             }
 
@@ -51,13 +51,16 @@ double PricingEngine::calculatePriceAntithetic(const Option &option, double spot
         for (unsigned int i = 0; i < numSimulations; ++i) {
             double avgSpot = 0.0;
             double avgSpotAntithetic = 0.0;
+            double spotPath = spot;
+            double spotPathAntithetic = spot;
 
             for (unsigned int j = 0; j < asianOption->getAveragingPeriods(); ++j) {
                 double randNormal = dist(gen);
-                double spotPath = spot * std::exp((riskFreeRate - 0.5 * volatility * volatility) * (j * dt) +
-                                                  volatility * std::sqrt(j * dt) * randNormal);
-                double spotPathAntithetic = spot * std::exp((riskFreeRate - 0.5 * volatility * volatility) * (j * dt) -
-                                                            volatility * std::sqrt(j * dt) * randNormal);
+
+                spotPath *= std::exp((riskFreeRate - 0.5 * volatility * volatility) * dt +
+                                     volatility * std::sqrt(dt) * randNormal);
+                spotPathAntithetic *= std::exp((riskFreeRate - 0.5 * volatility * volatility) * dt -
+                                               volatility * std::sqrt(dt) * randNormal);
 
                 avgSpot += spotPath;
                 avgSpotAntithetic += spotPathAntithetic;
