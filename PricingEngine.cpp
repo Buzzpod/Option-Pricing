@@ -11,7 +11,7 @@ double PricingEngine::calculatePriceNaive(const Option &option, double spot, dou
 
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::normal_distribution<double> dist(0.0, 1.0);
+        std::normal_distribution dist(0.0, 1.0);
 
         double dt = asianOption->getExpiry() / asianOption->getAveragingPeriods();
         double sumPayoffs = 0.0;
@@ -27,11 +27,11 @@ double PricingEngine::calculatePriceNaive(const Option &option, double spot, dou
                 avgSpot += spotPath;
             }
 
-            avgSpot /= static_cast<double>(asianOption->getAveragingPeriods());
+            avgSpot /= asianOption->getAveragingPeriods();
             sumPayoffs += option.payoff(avgSpot);
         }
 
-        double price = (sumPayoffs / static_cast<double>(numSimulations)) * std::exp(-riskFreeRate * option.getExpiry());
+        double price = (sumPayoffs / numSimulations) * std::exp(-riskFreeRate * option.getExpiry());
         return price;
     }
 
@@ -43,7 +43,7 @@ double PricingEngine::calculatePriceAntithetic(const Option &option, double spot
     if (asianOption) {
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::normal_distribution<double> dist(0.0, 1.0);
+        std::normal_distribution  dist(0.0, 1.0);
 
         double dt = asianOption->getExpiry() / asianOption->getAveragingPeriods();
         double sumPayoffs = 0.0;
@@ -66,13 +66,13 @@ double PricingEngine::calculatePriceAntithetic(const Option &option, double spot
                 avgSpotAntithetic += spotPathAntithetic;
             }
 
-            avgSpot /= static_cast<double>(asianOption->getAveragingPeriods());
-            avgSpotAntithetic /= static_cast<double>(asianOption->getAveragingPeriods());
+            avgSpot /= asianOption->getAveragingPeriods();
+            avgSpotAntithetic /= asianOption->getAveragingPeriods();
 
             sumPayoffs += (option.payoff(avgSpot) + option.payoff(avgSpotAntithetic)) / 2.0;
         }
 
-        double price = (sumPayoffs / static_cast<double>(numSimulations)) * std::exp(-riskFreeRate * option.getExpiry());
+        double price = (sumPayoffs / numSimulations) * std::exp(-riskFreeRate * option.getExpiry());
         return price;
     }
 
