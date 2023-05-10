@@ -4,7 +4,7 @@
 #include "PricingEngine.hpp"
 
 int main() {
-    double spot_price = 110.0;
+    double spot_price = 100.0;
     double strike_price = 105.0;
     double risk_free_rate = 0.05;
     double volatility = 0.20;
