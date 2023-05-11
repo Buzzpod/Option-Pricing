@@ -1,5 +1,6 @@
-# C++ options project
+# IB9JHO - Programming for Quantitative Finance - Group Project (C++)
 
+## Introduction
 Pricing fixed strike Asian options using a variety of numerical option pricing methodologies. A suite of testing and analysis will then be performed, with a particular focus on computational complexity, accuracy in terms of comparison to analytical solutions and variance, as well as the standard testing of edge cases. The codebase is structured into separate header and source files to ensure modularity, extensibility, and maintainability.
 
 We began with implementing the naïve method, followed by more complex methodologies such as antithetic variance reduction and various control variate techniques. The idea is to design a clear class structure so that we can focus on the quality of the object-oriented implementation by following the principles taught in the module.
