@@ -1,3 +1,0 @@
-C:/Users/hello/OneDrive/Warwick/Programming for Quantiative Finance/Group Project/cmake-build-debug/CMakeFiles/Group_Project.dir
-C:/Users/hello/OneDrive/Warwick/Programming for Quantiative Finance/Group Project/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/hello/OneDrive/Warwick/Programming for Quantiative Finance/Group Project/cmake-build-debug/CMakeFiles/rebuild_cache.dir
