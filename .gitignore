@@ -1,2 +1,5 @@
 /cmake-build-debug/
 /.idea/
+.Rhistory
+.DS_Story
+README.html
