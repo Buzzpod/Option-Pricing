@@ -2,7 +2,7 @@
 
 Pricing fixed strike Asian options using a variety of numerical option pricing methodologies. A suite of testing and analysis will then be performed, with a particular focus on computational complexity, accuracy in terms of comparison to analytical solutions and variance, as well as the standard testing of edge cases. The codebase is structured into separate header and source files to ensure modularity, extensibility, and maintainability.
 
-We began with implementing the naïve method, followed by more complex methodologies such as antithetic variance reduction and various control variate techniques. The idea is to design a clear class structure so that we can focus on the quality of the object-oriented implementation by following the principles taught in the module. 
+We began with implementing the naïve method, followed by more complex methodologies such as antithetic variance reduction and various control variate techniques. The idea is to design a clear class structure so that we can focus on the quality of the object-oriented implementation by following the principles taught in the module.
 
 This project concludes with a written report, reviewing existing literature and discussing how it relates to published work. Methodologies will be discussed, including the reasons as to why certain steps were taken when designing our class structure. We will also discuss some potential limitations of our class structure, and any scope for future extensions.
 
@@ -16,7 +16,7 @@ We have taken steps to ensure good coding practices were followed, which include
 
 The UML below briefly outlines the design of our codebase.
 
-![](./pictures/uml.jpeg)
+![](./assets/uml.jpeg)
 
 Option.hpp and Option.cpp define a base class called `Option`, that represents a generic financial option. The base class includes a constructor for initializing the option parameters (strike price, expiry, and option type), as well as a pure virtual function called `payoff()` for computing the option's payoff at expiration. The class also contains accessor methods to retrieve the values of the strike, expiry, and option type.
 
