@@ -28,3 +28,25 @@ PricingEngine.hpp and PricingEngine.cpp define a `PricingEngine` class that pric
 main.cpp is the driver program that initializes an AsianOption object with the desired parameters, passes it to the PricingEngine instance, and outputs the calculated price.
 
 The code follows object-oriented programming best practices, such as encapsulation, inheritance, and polymorphism. It is also well-documented and adheres to good coding standards and practices for readability and maintainability.
+
+***
+UPDATE: 12/05/23
+***
+# Project Structure and Testing Documentation
+## Project Structure
+The project has been updated to use a more modular directory structure. It now includes separate directories for source files (src), header files (include), and unit tests (tests).
+
+The src directory contains the implementation files for the project. Each of these files has a .cpp extension.
+The include directory contains the header files, which declare the classes and functions that are defined in the corresponding .cpp files. Each of these files has a .hpp extension.
+The tests directory contains the Google Test unit test files. Each of these files has a .cpp extension and contains a series of tests for the corresponding file in the src directory.
+The project uses CMake as its build system. The top-level CMakeLists.txt file in the project root directory coordinates the build, specifying the project name, the required C++ standard, and the directories that should be included in the build.
+
+## Unit Testing with Google Test
+The project uses the Google Test framework for unit testing. Google Test provides a series of macros that allow you to easily define tests and test cases, and includes features for test discovery, running the tests, and reporting the results.
+
+Each unit test file in the tests directory corresponds to a source file in the src directory. It includes a series of tests that verify the correctness of the functions and classes defined in that source file.
+
+To run the tests, build the project (e.g., by running cmake --build . from the command line in the build directory), and then execute the resulting test executable. This will run all the tests and report the results.
+
+## Conclusion
+This new project structure and testing framework make the code base more maintainable and robust. It is now easier to locate specific files, and the inclusion of unit tests will help to ensure the ongoing correctness of the code as it evolves over time.
