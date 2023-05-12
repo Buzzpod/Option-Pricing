@@ -20,7 +20,22 @@ FetchContent_Declare(
         GIT_TAG        release-1.11.0
 )
 
-FetchContent_MakeAvailable(googletest)
+# Fetch ImGui
+FetchContent_Declare(
+        imgui
+        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_TAG        v1.85
+)
+
+# Fetch GLFW
+FetchContent_Declare(
+        glfw
+        GIT_REPOSITORY https://github.com/glfw/glfw.git
+        GIT_TAG        3.3.4
+)
+
+# Fetch all the content
+FetchContent_MakeAvailable(googletest imgui glfw)
 
 # Add your source files directory
 add_subdirectory(src)
