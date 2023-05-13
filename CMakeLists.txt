@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Project's name
-project(Group_Project)
+project(IB9JHO_Group_Project)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
