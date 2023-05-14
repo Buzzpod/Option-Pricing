@@ -1,9 +1,9 @@
-# Add test executable
-add_executable(OptionTests test_option.cpp)
-add_executable(AsianOptionTests test_asian_option.cpp)
-add_executable(PricingEngineTests test_pricing_engine.cpp)
+# Add test executables
+add_executable(OptionTests test_option.cpp ../src/Option.cpp)
+add_executable(AsianOptionTests test_asian_option.cpp ../src/AsianOption.cpp)
+add_executable(PricingEngineTests test_pricing_engine.cpp ../src/PricingEngine.cpp ../src/AsianOption.cpp ../src/Option.cpp)
 
-# Link test executable against gtest & gtest_main
+# Link test executables against gtest & gtest_main
 target_link_libraries(OptionTests gtest_main)
 target_link_libraries(AsianOptionTests gtest_main)
 target_link_libraries(PricingEngineTests gtest_main)
