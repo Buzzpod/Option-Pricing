@@ -1,5 +1,5 @@
 # Add executable
-add_executable(IB9JHO_Group_Project main.cpp Option.cpp AsianOption.cpp PricingEngine.cpp)
+add_executable(IB9JHO_Group_Project main.cpp)
 
-# Include directories for header files
-target_include_directories(IB9JHO_Group_Project PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# Link the executable with the library
+target_link_libraries(IB9JHO_Group_Project ib9jho_library)

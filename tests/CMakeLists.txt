@@ -1,6 +1,6 @@
 # Add test executables
 add_executable(OptionTests test_option.cpp ../src/Option.cpp)
-add_executable(AsianOptionTests test_asian_option.cpp ../src/AsianOption.cpp)
+add_executable(AsianOptionTests test_asian_option.cpp ../src/AsianOption.cpp ../analysis/Analysis.cpp)
 add_executable(PricingEngineTests test_pricing_engine.cpp ../src/PricingEngine.cpp ../src/AsianOption.cpp ../src/Option.cpp)
 
 # Link test executables against gtest & gtest_main

@@ -22,8 +22,17 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-# Add your source files directory
+# Add source files directory
 add_subdirectory(src)
 
-# Add your test files directory
+# Add test files directory
 add_subdirectory(tests)
+
+# Add analysis test files directory
+add_subdirectory(analysis)
+
+# Add library
+add_library(ib9jho_library src/Option.cpp src/AsianOption.cpp src/PricingEngine.cpp)
+
+# Include directories for header files
+target_include_directories(ib9jho_library PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
