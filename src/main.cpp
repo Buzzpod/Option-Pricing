@@ -20,6 +20,8 @@ int main() {
     double putPriceNaive = PricingEngine::calculatePriceNaive(putOption, spot_price, risk_free_rate, volatility, num_simulations);
     double callPriceAntithetic = PricingEngine::calculatePriceAntithetic(callOption, spot_price, risk_free_rate, volatility, num_simulations);
     double putPriceAntithetic = PricingEngine::calculatePriceAntithetic(putOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double callPriceGBM = PricingEngine::calculatePriceGBM(callOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double putPriceGBM = PricingEngine::calculatePriceGBM(putOption, spot_price, risk_free_rate, volatility, num_simulations);
 
     std::cout << "Naive Method:" << std::endl;
     std::cout << "Call Option Price: " << callPriceNaive << std::endl;
@@ -27,6 +29,9 @@ int main() {
     std::cout << "Antithetic Variance Reduction Method:" << std::endl;
     std::cout << "Call Option Price: " << callPriceAntithetic << std::endl;
     std::cout << "Put Option Price: " << putPriceAntithetic << std::endl;
+    std::cout << "GBM Approximation Method:" << std::endl;
+    std::cout << "Call Option Price: " << callPriceGBM << std::endl;
+    std::cout << "Put Option Price: " << putPriceGBM << std::endl;
 
     return 0;
 }
