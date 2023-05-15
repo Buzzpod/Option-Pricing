@@ -94,3 +94,10 @@ A brief explanation of what the Analysis.cpp file is doing is found below:
 3. Calculating the price of the option: We use the Monte Carlo methods implemented in the PricingEngine class to calculate the price of the option. We calculate the price for both the call and put options, using both the naive and antithetic methods.
 
 4. Writing the prices to a CSV file: Finally, we write the prices calculated for the different options and methods to a CSV file. This file can be used for further analysis, such as in Excel
+
+***
+UPDATE: 15/05/23 
+***
+# GBM Approximation code 
+([Pull request #3](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/3))
+Added code for the GBM approximation of the price of the option to PricingEngine.hpp and PricingEngine.cpp which calculates the option price by constantly updating the spot price using a Geometric Brownian Motion. This can be used as a proxy to the analytical price of the option.
