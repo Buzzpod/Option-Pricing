@@ -86,24 +86,46 @@ TEST_F(PricingEngineTest, TestCalculatePriceAntitheticPutZero) {
     EXPECT_GT(priceGeometric, 0);
 }
 
-// Across methods (Naive and Antithetic), we expect prices to be close for their relevant options types (i.e. NaiveCall~AntitheticCall and NaivePut~AntitheticPut)
+TEST_F(PricingEngineTest, TestCalculatePriceGBMCallZero) {
+    double priceArithmetic = pricingEngine->calculatePriceGBM(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double priceGeometric = pricingEngine->calculatePriceGBM(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+    EXPECT_GT(priceArithmetic, 0);
+    EXPECT_GT(priceGeometric, 0);
+}
+
+TEST_F(PricingEngineTest, TestCalculatePriceGBMPutZero) {
+    double priceArithmetic = pricingEngine->calculatePriceGBM(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double priceGeometric = pricingEngine->calculatePriceGBM(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+    EXPECT_GT(priceArithmetic, 0);
+    EXPECT_GT(priceGeometric, 0);
+}
+
+// Across methods (Naive, Antithetic, GBM), we expect prices to be close for their relevant options types (i.e. NaiveCall~AntitheticCall~GBMCall and NaivePut~AntitheticPut~GBMPut)
 // for both averaging types
 TEST_F(PricingEngineTest, TestCallPriceNear) {
     double naivePriceArithmetic = pricingEngine->calculatePriceNaive(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
     double antitheticPriceArithmetic = pricingEngine->calculatePriceAntithetic(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceArithmetic = pricingEngine->calculatePriceGBM(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
     double naivePriceGeometric = pricingEngine->calculatePriceNaive(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     double antitheticPriceGeometric = pricingEngine->calculatePriceAntithetic(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceGeometric = pricingEngine->calculatePriceGBM(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     EXPECT_NEAR(naivePriceArithmetic, antitheticPriceArithmetic, 0.1);
     EXPECT_NEAR(naivePriceGeometric, antitheticPriceGeometric, 0.1);
+    EXPECT_NEAR(GBMPriceArithmetic, antitheticPriceArithmetic, 0.1);
+    EXPECT_NEAR(GBMPriceGeometric, antitheticPriceGeometric, 0.1);
 }
 
 TEST_F(PricingEngineTest, TestPutPriceNear) {
     double naivePriceArithmetic = pricingEngine->calculatePriceNaive(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
     double antitheticPriceArithmetic = pricingEngine->calculatePriceAntithetic(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceArithmetic = pricingEngine->calculatePriceGBM(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
     double naivePriceGeometric = pricingEngine->calculatePriceNaive(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     double antitheticPriceGeometric = pricingEngine->calculatePriceAntithetic(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceGeometric = pricingEngine->calculatePriceGBM(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     EXPECT_NEAR(naivePriceArithmetic, antitheticPriceArithmetic, 0.1);
     EXPECT_NEAR(naivePriceGeometric, antitheticPriceGeometric, 0.1);
+    EXPECT_NEAR(GBMPriceArithmetic, antitheticPriceArithmetic, 0.1);
+    EXPECT_NEAR(GBMPriceGeometric, antitheticPriceGeometric, 0.1);
 }
 
 // Using an online calculator (INSERT LINK), ensure all prices are near the calculated price, by specifying a suitable tolerance level
@@ -130,7 +152,7 @@ TEST_F(PricingEngineTest, TestCalculatePriceAntitheticPutNear) {
     EXPECT_NEAR(price, 5.743, 0.2);
 }
 
-// (Edge case): Ensure both methods return a price of zero for call options when spot_price=0.1 across both averaging types
+// (Edge case): Ensure all three methods return a price of zero for call options when spot_price=0.1 across both averaging types
 TEST_F(PricingEngineTest, TestCalculatePriceNaiveCallEdgeSpot) {
     double naivePriceArithmetic = pricingEngine->calculatePriceNaive(*callOption, spot_price_edge, risk_free_rate, volatility,num_simulations);
     double naivePriceGeometric = pricingEngine->calculatePriceNaive(*callOptionG, spot_price_edge, risk_free_rate, volatility,num_simulations);
@@ -143,6 +165,13 @@ TEST_F(PricingEngineTest, TestCalculatePriceAntitheticCallEdgeSpot) {
     double antitheticPriceGeometric = pricingEngine->calculatePriceAntithetic(*callOptionG, spot_price_edge, risk_free_rate, volatility,num_simulations);
     EXPECT_DOUBLE_EQ(antitheticPriceArithmetic, 0.0);
     EXPECT_DOUBLE_EQ(antitheticPriceGeometric, 0.0);
+}
+
+TEST_F(PricingEngineTest, TestCalculatePriceGBMCallEdgeSpot) {
+    double GBMPriceArithmetic = pricingEngine->calculatePriceGBM(*callOption, spot_price_edge, risk_free_rate, volatility,num_simulations);
+    double GBMPriceGeometric = pricingEngine->calculatePriceGBM(*callOptionG, spot_price_edge, risk_free_rate, volatility,num_simulations);
+    EXPECT_DOUBLE_EQ(GBMPriceArithmetic, 0.0);
+    EXPECT_DOUBLE_EQ(GBMPriceGeometric, 0.0);
 }
 
 // (Edge case): Ensure both methods return a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp)
@@ -158,4 +187,11 @@ TEST_F(PricingEngineTest, TestCalculatePriceAntitheticCallEdgeExpiry) {
     double antitheticPriceGeometric = pricingEngine->calculatePriceAntithetic(*callOptionEdgeG, spot_price, risk_free_rate, volatility,num_simulations);
     EXPECT_NEAR(antitheticPriceArithmetic, 0.0, 0.00001);
     EXPECT_NEAR(antitheticPriceGeometric, 0.0, 0.00001);
+}
+
+TEST_F(PricingEngineTest, TestCalculatePriceGBMCallEdgeExpiry) {
+    double GBMPriceArithmetic = pricingEngine->calculatePriceGBM(*callOptionEdge, spot_price, risk_free_rate, volatility,num_simulations);
+    double GBMPriceGeometric = pricingEngine->calculatePriceGBM(*callOptionEdgeG, spot_price, risk_free_rate, volatility,num_simulations);
+    EXPECT_NEAR(GBMPriceArithmetic, 0.0, 0.00001);
+    EXPECT_NEAR(GBMPriceGeometric, 0.0, 0.00001);
 }
