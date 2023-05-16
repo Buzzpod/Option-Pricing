@@ -1,9 +1,11 @@
 # IB9JHO - Programming for Quantitative Finance - Group Project (C++)
-
+***
+UPDATE: 16/05/23
+***
 ## Introduction
 Pricing fixed strike Asian options using a variety of numerical option pricing methodologies. A suite of testing and analysis will then be performed, with a particular focus on computational complexity, accuracy in terms of comparison to analytical solutions and variance, as well as the standard testing of edge cases. The codebase is structured into separate header and source files to ensure modularity, extensibility, and maintainability.
 
-We began with implementing the naïve method, followed by more complex methodologies such as antithetic variance reduction and various control variate techniques. The idea is to design a clear class structure so that we can focus on the quality of the object-oriented implementation by following the principles taught in the module.
+We began with implementing the naïve method, followed by more complex methodologies such as antithetic variance reduction and a Geometric Brownian Motion technique. The idea is to design a clear class structure so that we can focus on the quality of the object-oriented implementation by following the principles taught in the module.
 
 This project concludes with a written report, reviewing existing literature and discussing how it relates to published work. Methodologies will be discussed, including the reasons as to why certain steps were taken when designing our class structure. We will also discuss some potential limitations of our class structure, and any scope for future extensions.
 
@@ -46,46 +48,81 @@ The project uses the Google Test framework for unit testing. Google Test provide
 
 Each unit test file in the tests directory corresponds to a source file in the src directory. It includes a series of tests that verify the correctness of the functions and classes defined in that source file.
 
-To run the tests, build the project (e.g., by running cmake --build . from the command line in the build directory), and then execute the resulting test executable. This will run all the tests and report the results.
+To run the tests, build the project (e.g. by running `cmake --build` from the command line in the build directory), and then execute the resulting test executable. This will run all the tests and report the results.
 
 ## Conclusion
-This new project structure and testing framework make the code base more maintainable and robust. It is now easier to locate specific files, and the inclusion of unit tests will help to ensure the ongoing correctness of the code as it evolves over time.
+This new project structure and testing framework makes the codebase more maintainable and robust. It is now easier to locate specific files, and the inclusion of unit tests will help to ensure the ongoing correctness of the code as it evolves over time.
 
 ***
 UPDATE: 14/05/23
+UPDATE: 16/05/23
 ***
 # Unit Testing with GoogleTest Framework
 
-I have added an example of a unit test utilising the GoogleTest framework in tests,test_pricing_engine.cpp
-This should help you understand how to work with the framework and created further tests.
-Before writing the tests, the CMakeLists.txt file needed to be updated so that the tests themselves are linked the classes and functions that they are testing. These modifications are reflected in the minor updated to tests/CmakeLists.txt.
+Before writing the tests, the CMakeLists.txt file needs to be updated so that the tests themselves are linked the classes and functions that they are testing. These modifications are reflected in the minor updated to tests/CmakeLists.txt.
 
-Now, some explanation of tests/test_pricing_engine.cpp to help you understand what is happening here.
+There are three files, each of which test the `Option`, `AsianOption` and `PricingEngine` classes separately. Each file follows OOP practices with the following class structure setup: 
 
-1. SetUp(): This isn't a test per se, but it's important for the tests. This function is executed before each test is run. It sets up necessary objects and variables that the tests will use. In your case, you are creating AsianOption objects for a call and a put option, and you're setting up certain parameters like the spot price, risk-free rate, volatility, and number of simulations.
+1. SetUp(): This isn't a test per se, but it's important for the tests. This function is executed before each test is run. It sets up necessary objects and variables that the tests will use.
+2. TearDown(): This function is executed after each test is run. It is used to clean up any resources that were used in the test.
 
-2. TearDown(): This function is executed after each test is run. It's used to clean up any resources that were used in the test. In your case, you're deleting the AsianOption objects that were created in the SetUp() function.
+## `test_option.cpp`
 
-3. TestCalculatePriceNaiveCall: This test checks whether the calculatePriceNaive function of the PricingEngine class is working correctly for call options. Specifically, it checks whether the calculated price is greater than 0. It doesn't check whether the calculated price is correct, just that it's positive.
+([Pull request #4](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/4)) - Initial tests
 
-4. TestCalculatePriceNaivePut: This test is similar to the previous one, but it checks the calculatePriceNaive function for put options.
+This file tests the `Option` class, ensuring the accessor functions work as they should, returning the correct member variables. The tests are as follows:
 
-5. TestCalculatePriceAntitheticCall: This test checks whether the calculatePriceAntithetic function of the PricingEngine class is working correctly for call options. Again, it checks whether the calculated price is positive.
+1. TestGetStrike: Test case to ensure the strike price returned is correct.
+2. TestGetExpiry: Test case to ensure the expiry time returned is correct.
+3. TestGetType: Test case to ensure the type of option returned is correct. Can take two values - call or put.
 
-6. TestCalculatePriceAntitheticPut: This test checks the calculatePriceAntithetic function for put options.
+## `test_asian_option.cpp`
 
-These tests are basic sanity checks. They help to ensure that the pricing functions of the PricingEngine class don't produce completely unreasonable results (like negative prices). However, they don't check whether the pricing functions are actually calculating the correct option prices. For that, you would need to compare the calculated prices to some known correct values, for example, by calculating an analytical solution or comparing to the prices generated by another source such as an online Asian option calculator.
+([Pull request #5](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/5)) - Initial tests
+
+This file tests the `AsianOption` class, ensuring the accessor functions work as they should, returning the correct member variables. Since the `AsianOption` class inherits from the base `Option` class, we also check that the inherited accessor functions work as they should. The tests are as follows:
+
+1. TestGetAveragingType: Test case to ensure the averaging type returned is correct. Can take two values - arithmetic or geometric.
+2. TestGetAveragingPeriods: Test case to ensure the averaging periods returned is correct.
+3. TestGetStrike: Test case to ensure the strike price returned is correct. Inherited from base class.
+4. TestGetExpiry: Test case to ensure the expiry time returned is correct. Inherited from base class.
+5. TestGetType: Test case to ensure the type of option returned is correct. Inherited from base class. Can take two values - call or put.
+
+## `test_pricing_engine.cpp`
+
+([Pull request #2](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/2)) - Initial tests
+([Pull request #6](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/6)) - Added tests for GBM approximation
+
+This file tests the `PricingEngine` class, ensuring the prices returned are correct, whilst also looking at edge cases to see if the codebase performs unexpectedly. The tests are as follows:
+
+1. TestCalculatePriceNaiveCallZero: Test case to ensure the `calculatePriceNaive` function from the `PricingEngine` class is working correctly for call options. Specifically checks whether price is greater than zero.
+2. TestCalculatePriceNaivePutZero: Test case to ensure the `calculatePriceNaive` function from the `PricingEngine` class is working correctly for put options. Specifically checks whether price is greater than zero.
+3. TestCalculatePriceAntitheticCallZero: Test case to ensure the `calculatePriceAntithetic` function from the `PricingEngine` class is working correctly for call options. Specifically checks whether price is greater than zero.
+4. TestCalculatePriceAntitheticPutZero: Test case to ensure the `calculatePriceAntithetic` function from the `PricingEngine` class is working correctly for put options. Specifically checks whether price is greater than zero.
+5. TestCalculatePriceGBMCallZero: Test case to ensure the `calculatePriceGBM` function from the `PricingEngine` class is working correctly for call options. Specifically checks whether price is greater than zero.
+6. TestCalculatePriceGBMCallZero: Test case to ensure the `calculatePriceGBM` function from the `PricingEngine` class is working correctly for put options. Specifically checks whether price is greater than zero.
+7. TestCallPriceNear: Test case to ensure that the naive and antithetic methods return prices close to the GBM approximation for call options. This has been performed for both averaging types.
+8. TestPutPriceNear: Test case to ensure that the naive and antithetic methods return prices close to the GBM approximation for put options. This has been performed for both averaging types.
+9. TestCalculatePriceNaiveCallEdgeSpot: Edge case test, ensuring the naive method returns a price of zero for call options when spot_price=0.1 across both averaging types.
+10. TestCalculatePriceAntitheticCallEdgeSpot: Edge case test, ensuring the antithetic method returns a price of zero for call options when spot_price=0.1 across both averaging types.
+11. TestCalculatePriceGBMCallEdgeSpot: Edge case test, ensuring the GBM method returns a price of zero for call options when spot_price=0.1 across both averaging types.
+12. TestCalculatePriceNaiveCallEdgeExpiry: Edge case test, ensuring the naive method returns a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp).
+13. TestCalculatePriceAntitheticCallEdgeExpiry: Edge case test, ensuring the antithetic method returns a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp).
+14. TestCalculatePriceGBMCallEdgeExpiry: Edge case test, ensuring the GBM method returns a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp).
+
+These tests are basic sanity checks. They help to ensure that the pricing functions from the `PricingEngine` class do not produce completely unreasonable results (like negative prices). However, they don't check whether the pricing functions are actually calculating the correct option prices. For that, you would need to compare the calculated prices to some known correct values, for example, by calculating an analytical solution or comparing to the prices generated by another source such as an online Asian option calculator. In this case, we have used the GBM approximation as a "true" price.
 
 ***
 UPDATE: 14/05/23 (2)
+UPDATE: 16/05/23
 ***
 # Analysis code
 
-I have now added a new sub-directory to this repository called "analysis". I have also performed some minor restructuring to the repository which now builds "src" as a library which is then linked to from "analysis" and "tests". This change in build structure became sense as the project expands to contain an increasing number of sub-modules that all rely on the classes and methods contained within "src". These changes are reflected in the updates CMakeLists.txt, src/CMakeLists.txt, analysis/CMakeLists.txt and tests/CMakeLists.txt.
+All analysis takes place in the new sub-directory `analysis`. Some minor restructuring to the repository has been performed which now builds "src" as a library which is then linked to from "analysis" and "tests". This change in build structure became sense as the project expands to contain an increasing number of sub-modules that all rely on the classes and methods contained within "src". These changes are reflected in the updates CMakeLists.txt, src/CMakeLists.txt, analysis/CMakeLists.txt and tests/CMakeLists.txt.
 
-Since it is both difficult and breaks "best practice" to directly generate graphs in c++, I opted to construct the "analysis" module in a way that outputs the raw data in a csv file which we can then import into alternative software such as Excel and easily generate the desired illustrations.
+Since it is both difficult and breaks "best practice" to directly generate graphs in c++, the `analysis` module has been constructed in such a way that outputs separate raw data files for each piece of analysis in csv format. These files have then been read into a jupyter notebook to generate visualisations.
 
-A brief explanation of what the Analysis.cpp file is doing is found below:
+A brief explanation of what the `Analysis.cpp` file is doing is provided:
 
 1. Setting up the parameters: This includes the parameters for the Asian option (strike price, expiry time, option type, averaging type, and number of averaging periods), the parameters for the pricing calculation (spot price, risk-free rate, volatility), and the number of simulations for the Monte Carlo methods.
 
@@ -100,4 +137,5 @@ UPDATE: 15/05/23
 ***
 # GBM Approximation code 
 ([Pull request #3](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/3))
+
 Added code for the GBM approximation of the price of the option to PricingEngine.hpp and PricingEngine.cpp which calculates the option price by constantly updating the spot price using a Geometric Brownian Motion. This can be used as a proxy to the analytical price of the option.
