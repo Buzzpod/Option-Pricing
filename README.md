@@ -69,6 +69,7 @@ There are three files, each of which test the `Option`, `AsianOption` and `Prici
 ## `test_option.cpp`
 
 ([Pull request #4](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/4)) - Initial tests
+
 This file tests the `Option` class, ensuring the accessor functions work as they should, returning the correct member variables. The tests are as follows:
 
 1. TestGetStrike: Test case to ensure the strike price returned is correct.
@@ -78,6 +79,7 @@ This file tests the `Option` class, ensuring the accessor functions work as they
 ## `test_asian_option.cpp`
 
 ([Pull request #5](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/5)) - Initial tests
+
 This file tests the `AsianOption` class, ensuring the accessor functions work as they should, returning the correct member variables. Since the `AsianOption` class inherits from the base `Option` class, we also check that the inherited accessor functions work as they should. The tests are as follows:
 
 1. TestGetAveragingType: Test case to ensure the averaging type returned is correct. Can take two values - arithmetic or geometric.
@@ -90,6 +92,7 @@ This file tests the `AsianOption` class, ensuring the accessor functions work as
 
 ([Pull request #2](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/2)) - Initial tests
 ([Pull request #6](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/6)) - Added tests for GBM approximation
+
 This file tests the `PricingEngine` class, ensuring the prices returned are correct, whilst also looking at edge cases to see if the codebase performs unexpectedly. The tests are as follows:
 
 1. TestCalculatePriceNaiveCallZero: Test case to ensure the `calculatePriceNaive` function from the `PricingEngine` class is working correctly for call options. Specifically checks whether price is greater than zero.
@@ -134,4 +137,5 @@ UPDATE: 15/05/23
 ***
 # GBM Approximation code 
 ([Pull request #3](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/3))
+
 Added code for the GBM approximation of the price of the option to PricingEngine.hpp and PricingEngine.cpp which calculates the option price by constantly updating the spot price using a Geometric Brownian Motion. This can be used as a proxy to the analytical price of the option.
