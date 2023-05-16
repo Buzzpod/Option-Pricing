@@ -57,7 +57,7 @@ protected:
     unsigned int num_simulations;
 };
 
-// Begin by ensuring all prices are greater than 0 for both averaging types
+// Test case for ensuring all prices are greater than 0 for both averaging types
 TEST_F(PricingEngineTest, TestCalculatePriceNaiveCallZero) {
     double priceArithmetic = pricingEngine->calculatePriceNaive(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
     double priceGeometric = pricingEngine->calculatePriceNaive(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
@@ -100,8 +100,10 @@ TEST_F(PricingEngineTest, TestCalculatePriceGBMPutZero) {
     EXPECT_GT(priceGeometric, 0);
 }
 
-// Across methods (Naive, Antithetic, GBM), we expect prices to be close for their relevant options types (i.e. NaiveCall~AntitheticCall~GBMCall and NaivePut~AntitheticPut~GBMPut)
-// for both averaging types
+// Test case for ensuring that across methods (Naive, Antithetic, GBM), prices are close to their relevant option types (i.e. NaiveCall and AntitheticCall~GBMCall/
+// NaivePut and AntitheticPut~GBMPut) for both averaging types. We use the GBM approximation as the "true price" - this has been justified in the report.
+// Discussion: Discuss how tolerance is related to number of simulations performed. More simulations -> smaller tolerance since closer to true price
+// Discussion: Discuss how tolerance of was chosen (to be linked to analysis)
 TEST_F(PricingEngineTest, TestCallPriceNear) {
     double naivePriceArithmetic = pricingEngine->calculatePriceNaive(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
     double antitheticPriceArithmetic = pricingEngine->calculatePriceAntithetic(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
@@ -109,10 +111,10 @@ TEST_F(PricingEngineTest, TestCallPriceNear) {
     double naivePriceGeometric = pricingEngine->calculatePriceNaive(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     double antitheticPriceGeometric = pricingEngine->calculatePriceAntithetic(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     double GBMPriceGeometric = pricingEngine->calculatePriceGBM(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
-    EXPECT_NEAR(naivePriceArithmetic, antitheticPriceArithmetic, 0.1);
-    EXPECT_NEAR(naivePriceGeometric, antitheticPriceGeometric, 0.1);
-    EXPECT_NEAR(GBMPriceArithmetic, antitheticPriceArithmetic, 0.1);
-    EXPECT_NEAR(GBMPriceGeometric, antitheticPriceGeometric, 0.1);
+    EXPECT_NEAR(naivePriceArithmetic, GBMPriceArithmetic, 0.1);
+    EXPECT_NEAR(antitheticPriceArithmetic, GBMPriceArithmetic, 0.1);
+    EXPECT_NEAR(naivePriceGeometric, GBMPriceGeometric, 0.1);
+    EXPECT_NEAR(antitheticPriceGeometric, GBMPriceGeometric, 0.1);
 }
 
 TEST_F(PricingEngineTest, TestPutPriceNear) {
@@ -122,37 +124,13 @@ TEST_F(PricingEngineTest, TestPutPriceNear) {
     double naivePriceGeometric = pricingEngine->calculatePriceNaive(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     double antitheticPriceGeometric = pricingEngine->calculatePriceAntithetic(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     double GBMPriceGeometric = pricingEngine->calculatePriceGBM(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
-    EXPECT_NEAR(naivePriceArithmetic, antitheticPriceArithmetic, 0.1);
-    EXPECT_NEAR(naivePriceGeometric, antitheticPriceGeometric, 0.1);
-    EXPECT_NEAR(GBMPriceArithmetic, antitheticPriceArithmetic, 0.1);
-    EXPECT_NEAR(GBMPriceGeometric, antitheticPriceGeometric, 0.1);
+    EXPECT_NEAR(naivePriceArithmetic, GBMPriceArithmetic, 0.1);
+    EXPECT_NEAR(antitheticPriceArithmetic, GBMPriceArithmetic, 0.1);
+    EXPECT_NEAR(naivePriceGeometric, GBMPriceGeometric, 0.1);
+    EXPECT_NEAR(antitheticPriceGeometric, GBMPriceGeometric, 0.1);
 }
 
-// Using an online calculator (INSERT LINK), ensure all prices are near the calculated price, by specifying a suitable tolerance level
-// Extension idea: Use expected volatility for tolerance or look at other methods for calculating tolerance
-// Extension: Find an API to call to calculate prices and take an average, then specify tolerance level
-// Discussion: Discuss how tolerance is related to number of simulations performed. More simulations -> smaller tolerance since closer to true price
-TEST_F(PricingEngineTest, TestCalculatePriceNaiveCallNear) {
-    double price = pricingEngine->calculatePriceNaive(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
-    EXPECT_NEAR(price, 3.126, 0.2);
-}
-
-TEST_F(PricingEngineTest, TestCalculatePriceNaivePutNear) {
-    double price = pricingEngine->calculatePriceNaive(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
-    EXPECT_NEAR(price, 5.743, 0.2);
-}
-
-TEST_F(PricingEngineTest, TestCalculatePriceAntitheticCallNear) {
-    double price = pricingEngine->calculatePriceAntithetic(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
-    EXPECT_NEAR(price, 3.126, 0.2);
-}
-
-TEST_F(PricingEngineTest, TestCalculatePriceAntitheticPutNear) {
-    double price = pricingEngine->calculatePriceAntithetic(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
-    EXPECT_NEAR(price, 5.743, 0.2);
-}
-
-// (Edge case): Ensure all three methods return a price of zero for call options when spot_price=0.1 across both averaging types
+// Edge test case ensuring all three methods return a price of zero for call options when spot_price=0.1 across both averaging types
 TEST_F(PricingEngineTest, TestCalculatePriceNaiveCallEdgeSpot) {
     double naivePriceArithmetic = pricingEngine->calculatePriceNaive(*callOption, spot_price_edge, risk_free_rate, volatility,num_simulations);
     double naivePriceGeometric = pricingEngine->calculatePriceNaive(*callOptionG, spot_price_edge, risk_free_rate, volatility,num_simulations);
@@ -174,7 +152,7 @@ TEST_F(PricingEngineTest, TestCalculatePriceGBMCallEdgeSpot) {
     EXPECT_DOUBLE_EQ(GBMPriceGeometric, 0.0);
 }
 
-// (Edge case): Ensure both methods return a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp)
+// Edge test case ensuring both methods return a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp)
 TEST_F(PricingEngineTest, TestCalculatePriceNaiveCallEdgeExpiry) {
     double naivePriceArithmetic = pricingEngine->calculatePriceNaive(*callOptionEdge, spot_price, risk_free_rate, volatility,num_simulations);
     double naivePriceGeometric = pricingEngine->calculatePriceNaive(*callOptionEdgeG, spot_price, risk_free_rate, volatility,num_simulations);
