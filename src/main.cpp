@@ -4,12 +4,12 @@
 #include "PricingEngine.hpp"
 
 int main() {
-    double spot_price = 100.0;
-    double strike_price = 105.0;
+    double spot_price = 100;
+    double strike_price = 105;
     double risk_free_rate = 0.05;
     double volatility = 0.20;
     double expiry_time = 1.0;
-    unsigned int num_simulations = 100000;
+    unsigned int num_simulations = 10000;
     AsianOption::AveragingType averagingType = AsianOption::AveragingType::Arithmetic;
     unsigned int averagingPeriods = 10;
 
