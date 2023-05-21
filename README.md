@@ -1,6 +1,5 @@
 # IB9JHO - Programming for Quantitative Finance - Group Project (C++)
-***
-UPDATE: 16/05/23
+
 ***
 ## Introduction
 Pricing fixed strike Asian options using a variety of numerical option pricing methodologies. A suite of testing and analysis will then be performed, with a particular focus on computational complexity, accuracy in terms of comparison to analytical solutions and variance, as well as the standard testing of edge cases. The codebase is structured into separate header and source files to ensure modularity, extensibility, and maintainability.
@@ -14,6 +13,73 @@ We have taken steps to ensure good coding practices were followed, which include
 1. Planning each function and data member in each class before writing any code. This helped minimise the amount of time spent reformatting the classes due to design issues.
 2. Testing classes individually before integrating them into the project. This made the debugging process significantly more simple and faster.
 3. Each group member performed work on separate branches. A pull request was created where other members reviewed their work before being merged with the `main` branch.
+
+
+***
+# Instructions to Run the Project
+
+This project is comprised of a main application, a set of tests, and an analysis tool. To get started, you will need a machine with a C++ compiler and CMake version 3.14 or later installed. The following steps will guide you on how to build and run the different parts of the project.
+
+## Building the Project
+
+1. Open a terminal and navigate to the root directory of the project where the main `CMakeLists.txt` file is located.
+
+2. Create a build directory and navigate into it. This will keep all the build files in a separate location and keep your source directory clean:
+
+
+    mkdir build
+    cd build
+
+3. Run CMake to generate the build files:
+
+
+    cmake ..
+
+
+4. Compile the project:
+
+
+    make
+
+
+This will generate executables for the main application (`IB9JHO_Group_Project`), the tests (`OptionTests`, `AsianOptionTests`, `PricingEngineTests`), and the analysis tool (`Analysis`) in their respective directories within the `build` directory.
+
+## Running the Main Application
+
+To run the main application, navigate to the build directory for the main application (`build/src`) and run the following command:
+
+
+    ./IB9JHO_Group_Project
+
+
+
+## Running the Tests
+
+To run the tests, navigate to the build directory for the tests (`build/tests`) and run the following commands:
+
+
+
+    ./OptionTests
+    ./AsianOptionTests
+    ./PricingEngineTests
+
+
+
+Each command will run the respective test suite.
+
+## Running the Analysis Tool
+
+To run the analysis tool, navigate to the build directory for the analysis tool (`build/analysis`) and run the following command:
+
+
+    ./Analysis
+
+
+
+This will output a CSV file with the results of the analysis in the `analysis` directory located in the root of the project.
+
+
+***
 
 ## Implementation
 
