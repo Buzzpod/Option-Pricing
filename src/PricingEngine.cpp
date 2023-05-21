@@ -141,4 +141,29 @@ double PricingEngine::calculatePriceGBM(const Option& option, double spot, doubl
     }
 }
 
+double normalCDF(double x) {
+        return std::erfc(-x / std::sqrt(2)) / 2;
+    }
+
+void price_approximation_Arithmetic_Asian_Option_Black_Scholes(double spot, double riskFreeRate, double volatility, double strike_price, double expiry_time, unsigned int numSimulations, double t_1, double dt, double* call, double* put) {
+    double volatility_x = volatility*std::sqrt(t_1+dt*(numSimulations-1)*(2*numSimulations-1)/6*numSimulations);
+    double mu = std::log(spot)+(riskFreeRate-(volatility*volatility)/2)*(t_1+(numSimulations-1)*dt/2);
+    double K_hat = 0.0;
+    double pricing_sum = 0.0;
+
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::normal_distribution<double> distribution(0.0, 1.0);  
+
+    for (int i = 1; i <= numSimulations; ++i) {
+        double mu_i = std::log(spot)+(riskFreeRate-(volatility*volatility)/2)*(t_1+(i-1)*dt);
+        double volatility_i = volatility*std::sqrt(t_1+(i-1)*dt);
+        double volatility_xi = volatility*volatility*(t_1+dt*((i-1)-i*(i-1)));
+        K_hat += (1/numSimulations)*std::exp(mu_i+((volatility_xi*(std::log(strike_price)-mu))/(volatility_x*volatility_x))+(((volatility_i*volatility_i)-((volatility_xi*volatility_xi)/(volatility_x*volatility_x)))/2));
+        pricing_sum += (1/numSimulations)*std::exp(mu_i+(volatility_i*volatility_i)/2)*normalCDF(((mu-std::log(2*strike_price-K_hat))/volatility_x)+volatility_xi/volatility_x);
+    }
+    *call = std::exp(-riskFreeRate*expiry_time)*(pricing_sum-strike_price*normalCDF(((mu-std::log(2*strike_price-K_hat))/volatility_x)));
+    *put = std::exp(-riskFreeRate*expiry_time)*(strike_price*normalCDF(((mu-std::log(2*strike_price-K_hat))/volatility_x))-pricing_sum);
+}
+
 
