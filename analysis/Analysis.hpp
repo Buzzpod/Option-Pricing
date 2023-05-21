@@ -6,7 +6,7 @@
 
 class SpotVsOptionWriter {
 public:
-    void writeData(const std::string& filename) {
+    static void writeData(const std::string& filename) {
         // Open a file in write mode
         std::ofstream outfile(filename);
 
@@ -36,7 +36,7 @@ public:
 
 class ConvergenceWriter {
 public:
-    void writeData(const std::string& filename) {
+    static void writeData(const std::string& filename) {
         // Open a file in write mode
         std::ofstream outfile(filename);
 
@@ -61,7 +61,7 @@ public:
 
 class OptionPriceVsVolatilityWriter {
 public:
-    void writeData(const std::string& filename) {
+    static void writeData(const std::string& filename) {
         // Open a file in write mode
         std::ofstream outfile(filename);
 
@@ -89,11 +89,9 @@ public:
     }
 };
 
-
-
 class EfficiencyWriter {
 public:
-    void writeData(const std::string& filename) {
+    static void writeData(const std::string& filename) {
         // Open a file in write mode
         std::ofstream outfile(filename);
 
@@ -152,24 +150,3 @@ public:
         outfile.close();
     }
 };
-
-
-
-int main() {
-    SpotVsOptionWriter spotVsOptionWriter;
-    spotVsOptionWriter.writeData("../../analysis/SpotVsOption.csv");
-
-    ConvergenceWriter convergenceWriter;
-    convergenceWriter.writeData("../../analysis/Convergence.csv");
-
-    OptionPriceVsVolatilityWriter optionPriceVsVolatilityWriter;
-    optionPriceVsVolatilityWriter.writeData("../../analysis/OptionVsVolatility.csv");
-
-    EfficiencyWriter efficiencyWriter;
-    efficiencyWriter.writeData("../../analysis/Efficiency.csv");
-
-    ToleranceWriter toleranceWriter;
-    toleranceWriter.writeData("../../analysis/Tolerance.csv");
-
-    return 0;
-}
