@@ -27,20 +27,22 @@ This project is comprised of a main application, a set of tests, and an analysis
 2. Create a build directory and navigate into it. This will keep all the build files in a separate location and keep your source directory clean:
 
 
-    mkdir build
-    cd build
+```
+mkdir build
+cd build
+```
 
 3. Run CMake to generate the build files:
 
-
-    cmake ..
-
+```
+cmake ..
+```
 
 4. Compile the project:
 
-
-    make
-
+```
+make
+```
 
 This will generate executables for the main application (`IB9JHO_Group_Project`), the tests (`OptionTests`, `AsianOptionTests`, `PricingEngineTests`), and the analysis tool (`Analysis`) in their respective directories within the `build` directory.
 
@@ -48,21 +50,20 @@ This will generate executables for the main application (`IB9JHO_Group_Project`)
 
 To run the main application, navigate to the build directory for the main application (`build/src`) and run the following command:
 
-
-    ./IB9JHO_Group_Project
-
-
+```
+./IB9JHO_Group_Project
+```
 
 ## Running the Tests
 
 To run the tests, navigate to the build directory for the tests (`build/tests`) and run the following commands:
 
 
-
-    ./OptionTests
-    ./AsianOptionTests
-    ./PricingEngineTests
-
+```
+./OptionTests
+./AsianOptionTests
+./PricingEngineTests
+```
 
 
 Each command will run the respective test suite.
@@ -71,9 +72,9 @@ Each command will run the respective test suite.
 
 To run the analysis tool, navigate to the build directory for the analysis tool (`build/analysis`) and run the following command:
 
-
-    ./Analysis
-
+```
+./Analysis
+```
 
 
 This will output a CSV file with the results of the analysis in the `analysis` directory located in the root of the project.
