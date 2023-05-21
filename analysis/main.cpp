@@ -4,15 +4,15 @@
 // NOTE: ONLY execute the required cells in the .ipynb file to avoid a FileNotFound Error.
 
 int main() {
-    SpotVsOptionWriter spotVsOptionWriter;
-    SpotVsOptionWriter::writeData("../../analysis/SpotVsOption.csv");
+    SpotVsOptionWriter::writeData("../../analysis/SpotVsOption.csv", Option::Type::Call, AsianOption::AveragingType::Arithmetic, PricingEngine::calculatePriceGBM);
+
 /*
     ConvergenceWriter convergenceWriter;
     ConvergenceWriter::writeData("../../analysis/Convergence.csv");
-
-    OptionPriceVsVolatilityWriter optionPriceVsVolatilityWriter;
-    OptionPriceVsVolatilityWriter::writeData("../../analysis/OptionVsVolatility.csv");
 */
+
+    OptionPriceVsVolatilityWriter::writeData("../../analysis/OptionVsVolatility.csv", Option::Type::Call, AsianOption::AveragingType::Arithmetic, PricingEngine::calculatePriceGBM);
+
     EfficiencyWriter efficiencyWriter;
     EfficiencyWriter::writeData("../../analysis/Efficiency.csv");
 /*
