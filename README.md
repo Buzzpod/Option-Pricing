@@ -86,7 +86,7 @@ This will output a CSV file with the results of the analysis in the `analysis` d
 
 The UML below briefly outlines the design of our codebase.
 
-![](./assets/uml.jpeg)
+![](./assets/uml.png)
 
 Option.hpp and Option.cpp define a base class called `Option`, that represents a generic financial option. The base class includes a constructor for initializing the option parameters (strike price, expiry, and option type), as well as a pure virtual function called `payoff()` for computing the option's payoff at expiration. The class also contains accessor methods to retrieve the values of the strike, expiry, and option type.
 
@@ -206,3 +206,14 @@ UPDATE: 15/05/23
 ([Pull request #3](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/3))
 
 Added code for the GBM approximation of the price of the option to PricingEngine.hpp and PricingEngine.cpp which calculates the option price by constantly updating the spot price using a Geometric Brownian Motion. This can be used as a proxy to the analytical price of the option.
+
+***
+UPDATE: 21/05/23 
+***
+Classes:
+All classes use the static function writeData to generate a CSV file in the same directory and write the data in it. 
+1. SpotVsOptionWriter: loops over a range of spot prices and generates the corresponding option price for different expiry times using the GBM approximation
+2. ConvergenceWriter: loops over a range of number of simulations and generates the corresponding option prices of the three methods for constant parameters
+3. OptionPriceVsVolatilityWriter: loops over a range of volatility values and generates the corresponding option price for different expiry times using the GBM approximation
+4. EfficiencyWriter: loops over a range of number of simulations and and calculates the computational time of the two methods, naive and antithetic, for constant parameters
+5. ToleranceWriter: loops over a range of number of simulations and calculates the difference between the option price of each of the two methods and the GBM approximation for constant parameters
