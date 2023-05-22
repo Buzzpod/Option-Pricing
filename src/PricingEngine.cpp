@@ -239,8 +239,6 @@ double calculate_covariance(const std::vector<double>& values1, const std::vecto
 
 // Define the SDE_control_variate_2 function
 double PricingEngine::SDE_control_variate_2(const Option& option, double S0, double K, double T, double r, double sigma_0, int Npaths) {   
-    // Record time
-    std::time_t start_time = std::time(nullptr);
 
     // Compute t, S, Z using SDE_control_timestepper function
     const auto sde_tuple = SDE_control_timestepper(S0, T, r, sigma_0, Npaths);
