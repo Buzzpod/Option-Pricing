@@ -188,13 +188,9 @@ SDE_control_timestepper(double S0, double T, double r, double sigma_0, int Npath
 }
 
 double normalCDF(double x) {
+        // function to compute and return the cumulative distribution function of standard normal distribution
         return std::erfc(-x / std::sqrt(2)) / 2;
     }
-
-double normCDF(double x) {
-    // function to compute and return the cumulative distribution function of standard normal distribution
-    return 0.5 * (1.0 + std::erf(x / std::sqrt(2.0)));
-}
 
 std::vector<double> BS_call(double S0, double K, double T, double r, double sigma_0, int Npaths) {
     const std::vector<std::vector<double>> S = std::get<2>(SDE_control_timestepper(S0, T, r, sigma_0, Npaths));
