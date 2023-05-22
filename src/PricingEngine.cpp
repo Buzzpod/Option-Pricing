@@ -254,12 +254,33 @@ double PricingEngine::SDE_control_variate_2(const Option& option, double S0, dou
     std::vector<double> fZT(Npaths);
     for (int i = 0; i < Npaths; ++i) {
         if (option.getType() == Option::Type::Call) {
-            fST[i] = std::exp(-r * T) * std::max(std::accumulate(S.begin(), S.end(), 0.0, [i](double sum, const std::vector<double>& path) { return sum + path[i]; }) / S.size() - K, 0.0);
+            // fST represents an arithmetic mean
+
+            if (asianOption->getAveragingType() == AsianOption::AveragingType::Arithmetic) {
+                fST[i] = std::exp(-r * T) * std::max(std::accumulate(S.begin(), S.end(), 0.0, [i](double sum, const std::vector<double>& path) { return sum + path[i]; }) / S.size() - K, 0.0);
+            }
+            else {
+                double log_sum = 0;
+                for (const auto& path : S) {
+                    log_sum += std::log(path[i]);
+                }
+                fST[i] = std::exp(-r * T) * std::max(std::exp(log_sum / S.size()) - K, 0.0);
+            }
+
             fZT[i] = std::exp(-r * T) * std::max(Z.back()[i] - K, 0.0);
         }
         else {
+            if (asianOption->getAveragingType() == AsianOption::AveragingType::Arithmetic) {
+                fST[i] = std::exp(-r * T) * std::max(K - std::accumulate(S.begin(), S.end(), 0.0, [i](double sum, const std::vector<double>& path) { return sum + path[i]; }) / S.size(), 0.0);
+            }
+            else {
+                double log_sum = 0;
+                for (const auto& path : S) {
+                    log_sum += std::log(path[i]);
+                }
+                fST[i] = std::exp(-r * T) * std::max(K - std::exp(log_sum / S.size()), 0.0);
+            }
             // Put Option
-            fST[i] = std::exp(-r * T) * std::max(K - std::accumulate(S.begin(), S.end(), 0.0, [i](double sum, const std::vector<double>& path) { return sum + path[i]; }) / S.size(), 0.0);
             fZT[i] = std::exp(-r * T) * std::max(K - Z.back()[i], 0.0);
         }
     }
