@@ -159,23 +159,26 @@ This file tests the `AsianOption` class, ensuring the accessor functions work as
 
 ([Pull request #2](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/2)) - Initial tests
 ([Pull request #6](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/6)) - Added tests for GBM approximation
+([Pull request #12](https://github.com/Buzzpod/IB9JHO_Group_Project/pull/12)) - Reduced number of assertions for tests and renamed test cases
 
 This file tests the `PricingEngine` class, ensuring the prices returned are correct, whilst also looking at edge cases to see if the codebase performs unexpectedly. The tests are as follows:
 
-1. TestCalculatePriceNaiveCallZero: Test case to ensure the `calculatePriceNaive` function from the `PricingEngine` class is working correctly for call options. Specifically checks whether price is greater than zero.
-2. TestCalculatePriceNaivePutZero: Test case to ensure the `calculatePriceNaive` function from the `PricingEngine` class is working correctly for put options. Specifically checks whether price is greater than zero.
-3. TestCalculatePriceAntitheticCallZero: Test case to ensure the `calculatePriceAntithetic` function from the `PricingEngine` class is working correctly for call options. Specifically checks whether price is greater than zero.
-4. TestCalculatePriceAntitheticPutZero: Test case to ensure the `calculatePriceAntithetic` function from the `PricingEngine` class is working correctly for put options. Specifically checks whether price is greater than zero.
-5. TestCalculatePriceGBMCallZero: Test case to ensure the `calculatePriceGBM` function from the `PricingEngine` class is working correctly for call options. Specifically checks whether price is greater than zero.
-6. TestCalculatePriceGBMCallZero: Test case to ensure the `calculatePriceGBM` function from the `PricingEngine` class is working correctly for put options. Specifically checks whether price is greater than zero.
-7. TestCallPriceNear: Test case to ensure that the naive and antithetic methods return prices close to the GBM approximation for call options. This has been performed for both averaging types.
-8. TestPutPriceNear: Test case to ensure that the naive and antithetic methods return prices close to the GBM approximation for put options. This has been performed for both averaging types.
-9. TestCalculatePriceNaiveCallEdgeSpot: Edge case test, ensuring the naive method returns a price of zero for call options when spot_price=0.1 across both averaging types.
-10. TestCalculatePriceAntitheticCallEdgeSpot: Edge case test, ensuring the antithetic method returns a price of zero for call options when spot_price=0.1 across both averaging types.
-11. TestCalculatePriceGBMCallEdgeSpot: Edge case test, ensuring the GBM method returns a price of zero for call options when spot_price=0.1 across both averaging types.
-12. TestCalculatePriceNaiveCallEdgeExpiry: Edge case test, ensuring the naive method returns a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp).
-13. TestCalculatePriceAntitheticCallEdgeExpiry: Edge case test, ensuring the antithetic method returns a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp).
-14. TestCalculatePriceGBMCallEdgeExpiry: Edge case test, ensuring the GBM method returns a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp).
+1. TestNaiveCallGreaterZero: Test case to ensure the `calculatePriceNaive` function from the `PricingEngine` class is working correctly for call options. Specifically checks whether price is greater than zero.
+2. TestNaivePutGreaterZero: Test case to ensure the `calculatePriceNaive` function from the `PricingEngine` class is working correctly for put options. Specifically checks whether price is greater than zero.
+3. TestAntitheticCallGreaterZero: Test case to ensure the `calculatePriceAntithetic` function from the `PricingEngine` class is working correctly for call options. Specifically checks whether price is greater than zero.
+4. TestAntitheticPutGreaterZero: Test case to ensure the `calculatePriceAntithetic` function from the `PricingEngine` class is working correctly for put options. Specifically checks whether price is greater than zero.
+5. TestGBMCallGreaterZero: Test case to ensure the `calculatePriceGBM` function from the `PricingEngine` class is working correctly for call options. Specifically checks whether price is greater than zero.
+6. TestGBMPutGreaterZero: Test case to ensure the `calculatePriceGBM` function from the `PricingEngine` class is working correctly for put options. Specifically checks whether price is greater than zero.
+7. TestNaiveCallPriceNear: Test case to ensure that the naive method returns price close to the GBM approximation for call options. This has been performed for both averaging types.
+8. TestAntitheticCallPriceNear: Test case to ensure that the antithetic method returns price close to the GBM approximation for call options. This has been performed for both averaging types.
+9. TestNaivePutPriceNear: Test case to ensure that the naive method returns price close to the GBM approximation for put options. This has been performed for both averaging types.
+10. TestAntitheticPutPriceNear: Test case to ensure that the antithetic method returns price close to the GBM approximation for put options. This has been performed for both averaging types.
+11. TestNaiveCallEdgeCaseSpot: Edge case test, ensuring the naive method returns a price of zero for call options when spot_price=0.1 across both averaging types.
+12. TestAntitheticCallEdgeCaseSpot: Edge case test, ensuring the antithetic method returns a price of zero for call options when spot_price=0.1 across both averaging types.
+13. TestGBMCallEdgeCaseSpot: Edge case test, ensuring the GBM method returns a price of zero for call options when spot_price=0.1 across both averaging types.
+14. TestNaiveCallEdgeCaseExpiry: Edge case test, ensuring the naive method returns a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp).
+15. TestAntitheticCallEdgeCaseExpiry: Edge case test, ensuring the antithetic method returns a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp).
+16. TestGBMCallEdgeCaseExpiry: Edge case test, ensuring the GBM method returns a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp).
 
 These tests are basic sanity checks. They help to ensure that the pricing functions from the `PricingEngine` class do not produce completely unreasonable results (like negative prices). However, they don't check whether the pricing functions are actually calculating the correct option prices. For that, you would need to compare the calculated prices to some known correct values, for example, by calculating an analytical solution or comparing to the prices generated by another source such as an online Asian option calculator. In this case, we have used the GBM approximation as a "true" price.
 
