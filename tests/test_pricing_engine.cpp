@@ -42,60 +42,60 @@ protected:
         delete callOptionEdgeG;
     }
 
-    PricingEngine* pricingEngine;
-    AsianOption* callOption;
-    AsianOption* putOption;
-    AsianOption* callOptionEdge;
-    AsianOption* callOptionG;
-    AsianOption* putOptionG;
-    AsianOption* callOptionEdgeG;
+    PricingEngine* pricingEngine{};
+    AsianOption* callOption{};
+    AsianOption* putOption{};
+    AsianOption* callOptionEdge{};
+    AsianOption* callOptionG{};
+    AsianOption* putOptionG{};
+    AsianOption* callOptionEdgeG{};
 
-    double spot_price;
-    double spot_price_edge;
-    double risk_free_rate;
-    double volatility;
-    unsigned int num_simulations;
+    double spot_price{};
+    double spot_price_edge{};
+    double risk_free_rate{};
+    double volatility{};
+    unsigned int num_simulations{};
 };
 
 // Test case for ensuring all prices are greater than 0 for both averaging types
-TEST_F(PricingEngineTest, TestCalculatePriceNaiveCallZero) {
-    double priceArithmetic = pricingEngine->calculatePriceNaive(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double priceGeometric = pricingEngine->calculatePriceNaive(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+TEST_F(PricingEngineTest, NaiveCallGreaterZero) {
+    double priceArithmetic = PricingEngine::calculatePriceNaive(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double priceGeometric = PricingEngine::calculatePriceNaive(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     EXPECT_GT(priceArithmetic, 0);
     EXPECT_GT(priceGeometric, 0);
 }
 
-TEST_F(PricingEngineTest, TestCalculatePriceNaivePutZero) {
-    double priceArithmetic = pricingEngine->calculatePriceNaive(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double priceGeometric = pricingEngine->calculatePriceNaive(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+TEST_F(PricingEngineTest, NaivePutGreaterZero) {
+    double priceArithmetic = PricingEngine::calculatePriceNaive(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double priceGeometric = PricingEngine::calculatePriceNaive(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     EXPECT_GT(priceArithmetic, 0);
     EXPECT_GT(priceGeometric, 0);
 }
 
-TEST_F(PricingEngineTest, TestCalculatePriceAntitheticCallZero) {
-    double priceArithmetic = pricingEngine->calculatePriceAntithetic(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double priceGeometric = pricingEngine->calculatePriceAntithetic(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+TEST_F(PricingEngineTest, AntitheticCallGreaterZero) {
+    double priceArithmetic = PricingEngine::calculatePriceAntithetic(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double priceGeometric = PricingEngine::calculatePriceAntithetic(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     EXPECT_GT(priceArithmetic, 0);
     EXPECT_GT(priceGeometric, 0);
 }
 
-TEST_F(PricingEngineTest, TestCalculatePriceAntitheticPutZero) {
-    double priceArithmetic = pricingEngine->calculatePriceAntithetic(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double priceGeometric = pricingEngine->calculatePriceAntithetic(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+TEST_F(PricingEngineTest, AntitheticPutGreaterZero) {
+    double priceArithmetic = PricingEngine::calculatePriceAntithetic(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double priceGeometric = PricingEngine::calculatePriceAntithetic(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     EXPECT_GT(priceArithmetic, 0);
     EXPECT_GT(priceGeometric, 0);
 }
 
-TEST_F(PricingEngineTest, TestCalculatePriceGBMCallZero) {
-    double priceArithmetic = pricingEngine->calculatePriceGBM(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double priceGeometric = pricingEngine->calculatePriceGBM(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+TEST_F(PricingEngineTest, GBMCallGreaterZero) {
+    double priceArithmetic = PricingEngine::calculatePriceGBM(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double priceGeometric = PricingEngine::calculatePriceGBM(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     EXPECT_GT(priceArithmetic, 0);
     EXPECT_GT(priceGeometric, 0);
 }
 
-TEST_F(PricingEngineTest, TestCalculatePriceGBMPutZero) {
-    double priceArithmetic = pricingEngine->calculatePriceGBM(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double priceGeometric = pricingEngine->calculatePriceGBM(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+TEST_F(PricingEngineTest, GBMPutGreaterZero) {
+    double priceArithmetic = PricingEngine::calculatePriceGBM(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double priceGeometric = PricingEngine::calculatePriceGBM(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     EXPECT_GT(priceArithmetic, 0);
     EXPECT_GT(priceGeometric, 0);
 }
@@ -104,72 +104,82 @@ TEST_F(PricingEngineTest, TestCalculatePriceGBMPutZero) {
 // NaivePut and AntitheticPut~GBMPut) for both averaging types. We use the GBM approximation as the "true price" - this has been justified in the report.
 // Discussion: Discuss how tolerance is related to number of simulations performed. More simulations -> smaller tolerance since closer to true price
 // Discussion: Discuss how tolerance of was chosen (to be linked to analysis)
-TEST_F(PricingEngineTest, TestCallPriceNear) {
-    double naivePriceArithmetic = pricingEngine->calculatePriceNaive(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double antitheticPriceArithmetic = pricingEngine->calculatePriceAntithetic(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double GBMPriceArithmetic = pricingEngine->calculatePriceGBM(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double naivePriceGeometric = pricingEngine->calculatePriceNaive(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
-    double antitheticPriceGeometric = pricingEngine->calculatePriceAntithetic(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
-    double GBMPriceGeometric = pricingEngine->calculatePriceGBM(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+TEST_F(PricingEngineTest, NaiveCallPriceNear) {
+    double naivePriceArithmetic = PricingEngine::calculatePriceNaive(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double naivePriceGeometric = PricingEngine::calculatePriceNaive(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceArithmetic = PricingEngine::calculatePriceGBM(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceGeometric = PricingEngine::calculatePriceGBM(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     EXPECT_NEAR(naivePriceArithmetic, GBMPriceArithmetic, 0.1);
-    EXPECT_NEAR(antitheticPriceArithmetic, GBMPriceArithmetic, 0.1);
     EXPECT_NEAR(naivePriceGeometric, GBMPriceGeometric, 0.1);
+}
+
+TEST_F(PricingEngineTest, AntitheticCallPriceNear) {
+    double antitheticPriceArithmetic = PricingEngine::calculatePriceAntithetic(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double antitheticPriceGeometric = PricingEngine::calculatePriceAntithetic(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceArithmetic = PricingEngine::calculatePriceGBM(*callOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceGeometric = PricingEngine::calculatePriceGBM(*callOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+    EXPECT_NEAR(antitheticPriceArithmetic, GBMPriceArithmetic, 0.1);
     EXPECT_NEAR(antitheticPriceGeometric, GBMPriceGeometric, 0.1);
 }
 
-TEST_F(PricingEngineTest, TestPutPriceNear) {
-    double naivePriceArithmetic = pricingEngine->calculatePriceNaive(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double antitheticPriceArithmetic = pricingEngine->calculatePriceAntithetic(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double GBMPriceArithmetic = pricingEngine->calculatePriceGBM(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double naivePriceGeometric = pricingEngine->calculatePriceNaive(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
-    double antitheticPriceGeometric = pricingEngine->calculatePriceAntithetic(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
-    double GBMPriceGeometric = pricingEngine->calculatePriceGBM(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+TEST_F(PricingEngineTest, NaivePutPriceNear) {
+    double naivePriceArithmetic = PricingEngine::calculatePriceNaive(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double naivePriceGeometric = PricingEngine::calculatePriceNaive(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceArithmetic = PricingEngine::calculatePriceGBM(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceGeometric = PricingEngine::calculatePriceGBM(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
     EXPECT_NEAR(naivePriceArithmetic, GBMPriceArithmetic, 0.1);
-    EXPECT_NEAR(antitheticPriceArithmetic, GBMPriceArithmetic, 0.1);
     EXPECT_NEAR(naivePriceGeometric, GBMPriceGeometric, 0.1);
+}
+
+TEST_F(PricingEngineTest, AntitheticPutPriceNear) {
+    double antitheticPriceArithmetic = PricingEngine::calculatePriceAntithetic(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double antitheticPriceGeometric = PricingEngine::calculatePriceAntithetic(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceArithmetic = PricingEngine::calculatePriceGBM(*putOption, spot_price, risk_free_rate, volatility, num_simulations);
+    double GBMPriceGeometric = PricingEngine::calculatePriceGBM(*putOptionG, spot_price, risk_free_rate, volatility, num_simulations);
+    EXPECT_NEAR(antitheticPriceArithmetic, GBMPriceArithmetic, 0.1);
     EXPECT_NEAR(antitheticPriceGeometric, GBMPriceGeometric, 0.1);
 }
 
 // Edge test case ensuring all three methods return a price of zero for call options when spot_price=0.1 across both averaging types
-TEST_F(PricingEngineTest, TestCalculatePriceNaiveCallEdgeSpot) {
-    double naivePriceArithmetic = pricingEngine->calculatePriceNaive(*callOption, spot_price_edge, risk_free_rate, volatility,num_simulations);
-    double naivePriceGeometric = pricingEngine->calculatePriceNaive(*callOptionG, spot_price_edge, risk_free_rate, volatility,num_simulations);
+TEST_F(PricingEngineTest, NaiveCallEdgeCaseSpot) {
+    double naivePriceArithmetic = PricingEngine::calculatePriceNaive(*callOption, spot_price_edge, risk_free_rate, volatility,num_simulations);
+    double naivePriceGeometric = PricingEngine::calculatePriceNaive(*callOptionG, spot_price_edge, risk_free_rate, volatility,num_simulations);
     EXPECT_DOUBLE_EQ(naivePriceArithmetic, 0.0);
     EXPECT_DOUBLE_EQ(naivePriceGeometric, 0.0);
 }
 
-TEST_F(PricingEngineTest, TestCalculatePriceAntitheticCallEdgeSpot) {
-    double antitheticPriceArithmetic = pricingEngine->calculatePriceAntithetic(*callOption, spot_price_edge, risk_free_rate, volatility,num_simulations);
-    double antitheticPriceGeometric = pricingEngine->calculatePriceAntithetic(*callOptionG, spot_price_edge, risk_free_rate, volatility,num_simulations);
+TEST_F(PricingEngineTest, AntitheticCallEdgeCaseSpot) {
+    double antitheticPriceArithmetic = PricingEngine::calculatePriceAntithetic(*callOption, spot_price_edge, risk_free_rate, volatility,num_simulations);
+    double antitheticPriceGeometric = PricingEngine::calculatePriceAntithetic(*callOptionG, spot_price_edge, risk_free_rate, volatility,num_simulations);
     EXPECT_DOUBLE_EQ(antitheticPriceArithmetic, 0.0);
     EXPECT_DOUBLE_EQ(antitheticPriceGeometric, 0.0);
 }
 
-TEST_F(PricingEngineTest, TestCalculatePriceGBMCallEdgeSpot) {
-    double GBMPriceArithmetic = pricingEngine->calculatePriceGBM(*callOption, spot_price_edge, risk_free_rate, volatility,num_simulations);
-    double GBMPriceGeometric = pricingEngine->calculatePriceGBM(*callOptionG, spot_price_edge, risk_free_rate, volatility,num_simulations);
+TEST_F(PricingEngineTest, GBMCallEdgeCaseSpot) {
+    double GBMPriceArithmetic = PricingEngine::calculatePriceGBM(*callOption, spot_price_edge, risk_free_rate, volatility,num_simulations);
+    double GBMPriceGeometric = PricingEngine::calculatePriceGBM(*callOptionG, spot_price_edge, risk_free_rate, volatility,num_simulations);
     EXPECT_DOUBLE_EQ(GBMPriceArithmetic, 0.0);
     EXPECT_DOUBLE_EQ(GBMPriceGeometric, 0.0);
 }
 
 // Edge test case ensuring both methods return a price of zero for call options when expiry time is imminent (0.01) across both averaging types (to 5dp)
-TEST_F(PricingEngineTest, TestCalculatePriceNaiveCallEdgeExpiry) {
-    double naivePriceArithmetic = pricingEngine->calculatePriceNaive(*callOptionEdge, spot_price, risk_free_rate, volatility,num_simulations);
-    double naivePriceGeometric = pricingEngine->calculatePriceNaive(*callOptionEdgeG, spot_price, risk_free_rate, volatility,num_simulations);
+TEST_F(PricingEngineTest, NaiveCallEdgeCaseExpiry) {
+    double naivePriceArithmetic = PricingEngine::calculatePriceNaive(*callOptionEdge, spot_price, risk_free_rate, volatility,num_simulations);
+    double naivePriceGeometric = PricingEngine::calculatePriceNaive(*callOptionEdgeG, spot_price, risk_free_rate, volatility,num_simulations);
     EXPECT_NEAR(naivePriceArithmetic, 0.0, 0.00001);
     EXPECT_NEAR(naivePriceGeometric, 0.0, 0.00001);
 }
 
-TEST_F(PricingEngineTest, TestCalculatePriceAntitheticCallEdgeExpiry) {
-    double antitheticPriceArithmetic = pricingEngine->calculatePriceAntithetic(*callOptionEdge, spot_price, risk_free_rate, volatility,num_simulations);
-    double antitheticPriceGeometric = pricingEngine->calculatePriceAntithetic(*callOptionEdgeG, spot_price, risk_free_rate, volatility,num_simulations);
+TEST_F(PricingEngineTest, AntitheticCallEdgeCaseExpiry) {
+    double antitheticPriceArithmetic = PricingEngine::calculatePriceAntithetic(*callOptionEdge, spot_price, risk_free_rate, volatility,num_simulations);
+    double antitheticPriceGeometric = PricingEngine::calculatePriceAntithetic(*callOptionEdgeG, spot_price, risk_free_rate, volatility,num_simulations);
     EXPECT_NEAR(antitheticPriceArithmetic, 0.0, 0.00001);
     EXPECT_NEAR(antitheticPriceGeometric, 0.0, 0.00001);
 }
 
-TEST_F(PricingEngineTest, TestCalculatePriceGBMCallEdgeExpiry) {
-    double GBMPriceArithmetic = pricingEngine->calculatePriceGBM(*callOptionEdge, spot_price, risk_free_rate, volatility,num_simulations);
-    double GBMPriceGeometric = pricingEngine->calculatePriceGBM(*callOptionEdgeG, spot_price, risk_free_rate, volatility,num_simulations);
+TEST_F(PricingEngineTest, GBMCallEdgeCaseExpiry) {
+    double GBMPriceArithmetic = PricingEngine::calculatePriceGBM(*callOptionEdge, spot_price, risk_free_rate, volatility,num_simulations);
+    double GBMPriceGeometric = PricingEngine::calculatePriceGBM(*callOptionEdgeG, spot_price, risk_free_rate, volatility,num_simulations);
     EXPECT_NEAR(GBMPriceArithmetic, 0.0, 0.00001);
     EXPECT_NEAR(GBMPriceGeometric, 0.0, 0.00001);
 }
