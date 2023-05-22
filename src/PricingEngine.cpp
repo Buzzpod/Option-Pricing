@@ -187,6 +187,10 @@ SDE_control_timestepper(double S0, double T, double r, double sigma_0, int Npath
     return std::make_tuple(t, S, Z);
 }
 
+double normalCDF(double x) {
+        return std::erfc(-x / std::sqrt(2)) / 2;
+    }
+
 double normCDF(double x) {
     // function to compute and return the cumulative distribution function of standard normal distribution
     return 0.5 * (1.0 + std::erf(x / std::sqrt(2.0)));
