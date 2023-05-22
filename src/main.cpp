@@ -22,8 +22,9 @@ int main() {
     double putPriceAntithetic = PricingEngine::calculatePriceAntithetic(putOption, spot_price, risk_free_rate, volatility, num_simulations);
     double callPriceGBM = PricingEngine::calculatePriceGBM(callOption, spot_price, risk_free_rate, volatility, num_simulations);
     double putPriceGBM = PricingEngine::calculatePriceGBM(putOption, spot_price, risk_free_rate, volatility, num_simulations);
-    double controlVariateCall = PricingEngine::SDE_control_variate_2(callOption, spot_price, strike_price, expiry_time, risk_free_rate, volatility, num_simulations);
-    double controlVariatePut = PricingEngine::SDE_control_variate_2(putOption, spot_price, strike_price, expiry_time, risk_free_rate, volatility, num_simulations);
+
+    double controlVariateCall = PricingEngine::SDE_control_variate_2(callOption, spot_price, strike_price, risk_free_rate, volatility, num_simulations);
+    double controlVariatePut = PricingEngine::SDE_control_variate_2(putOption, spot_price, strike_price, risk_free_rate, volatility, num_simulations);
 
     std::cout << "Naive Method:" << std::endl;
     std::cout << "Call Option Price: " << callPriceNaive << std::endl;
@@ -34,6 +35,7 @@ int main() {
     std::cout << "GBM Approximation Method:" << std::endl;
     std::cout << "Call Option Price: " << callPriceGBM << std::endl;
     std::cout << "Put Option Price: " << putPriceGBM << std::endl;
+    std::cout << "Control Variate Method:" << std::endl;
     std::cout << "Call Option Price: " << controlVariateCall << std::endl;
     std::cout << "Put Option Price: " << controlVariatePut << std::endl;
 
