@@ -141,7 +141,7 @@ double PricingEngine::calculatePriceGBM(const Option& option, double spot, doubl
     }
 }
 
-double volatility(double S, double t, double sigma_0) {
+double GBMvol(double S, double t, double sigma_0) {
     // function to compute and return the local volatility
     double pi = std::acos(-1.0);
     double sigma = sigma_0 * (1 + 0.3 * std::cos(2 * pi * t)) * (1 + 0.5 * std::exp(-S / 50));
@@ -149,42 +149,50 @@ double volatility(double S, double t, double sigma_0) {
 }
 
 std::tuple<std::vector<double>, std::vector<std::vector<double>>, std::vector<std::vector<double>>>
-SDE_control_timestepper(double S0, double T, double r, double sigma_0, int Npaths) {
+SDE_control_timestepper(const Option &option, double S0, double r, double sigma_0, int Npaths) {
     // Simulate GBM paths
     // returns the time array and the paths
 
-    // Use a time step of 1 day assuming 260 days/year
-    int Nsteps = static_cast<int>(260 * T);
-
-    double dt = T / Nsteps;
-    std::vector<double> t(Nsteps + 1);
-    std::vector<std::vector<double>> S(Nsteps + 1, std::vector<double>(Npaths));
-    std::vector<std::vector<double>> Z(Nsteps + 1, std::vector<double>(Npaths));
-
-    // Time step starting from initial condition
-    for (int i = 0; i <= Nsteps; ++i) {
-        t[i] = i * dt;
+    const AsianOption* asianOption = dynamic_cast<const AsianOption*>(&option);
+    if (!asianOption) {
+        throw std::invalid_argument("Option is not an Asian option");
     }
 
-    S[0] = std::vector<double>(Npaths, S0);
-    Z[0] = std::vector<double>(Npaths, S0);
+    if (asianOption) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::normal_distribution<double> dist(0.0, 1.0);
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::normal_distribution<double> dist(0.0, 1.0);
+        double dt = asianOption->getExpiry() / asianOption->getAveragingPeriods();
+        std::vector<double> t(asianOption->getAveragingPeriods() + 1);
+        std::vector<std::vector<double>> S(asianOption->getAveragingPeriods() + 1, std::vector<double>(Npaths));
+        std::vector<std::vector<double>> Z(asianOption->getAveragingPeriods() + 1, std::vector<double>(Npaths));
 
-    for (int n = 0; n < Nsteps; ++n) {
-        std::vector<double> dW(Npaths);
-        for (int i = 0; i < Npaths; ++i) {
-            dW[i] = std::sqrt(dt) * dist(gen);
+        // Time step starting from initial condition
+        for (int i = 0; i <= asianOption->getAveragingPeriods(); ++i) {
+            t[i] = i * dt;
         }
-        for (int i = 0; i < Npaths; ++i) {
-            S[n + 1][i] = S[n][i] * (1. + r * dt + volatility(S[n][i], t[n], sigma_0) * dW[i]);
-            Z[n + 1][i] = Z[n][i] * (1. + r * dt + volatility(S[0][i], 0, sigma_0) * dW[i]);
+
+        S[0] = std::vector<double>(Npaths, S0);
+        Z[0] = std::vector<double>(Npaths, S0);
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::normal_distribution<double> dist(0.0, 1.0);
+
+        for (int n = 0; n < asianOption->getAveragingPeriods(); ++n) {
+            std::vector<double> dW(Npaths);
+            for (int i = 0; i < Npaths; ++i) {
+                dW[i] = std::sqrt(dt) * dist(gen);
+            }
+            for (int i = 0; i < Npaths; ++i) {
+                S[n + 1][i] = S[n][i] * (1. + r * dt + GBMvol(S[n][i], t[n], sigma_0) * dW[i]);
+                Z[n + 1][i] = Z[n][i] * (1. + r * dt + GBMvol(S[0][i], 0, sigma_0) * dW[i]);
+            }
         }
+
+        return std::make_tuple(t, S, Z);
     }
-
-    return std::make_tuple(t, S, Z);
 }
 
 double normalCDF(double x) {
@@ -192,19 +200,58 @@ double normalCDF(double x) {
         return std::erfc(-x / std::sqrt(2)) / 2;
     }
 
-std::vector<double> BS_call(double S0, double K, double T, double r, double sigma_0, int Npaths) {
-    const std::vector<std::vector<double>> S = std::get<2>(SDE_control_timestepper(S0, T, r, sigma_0, Npaths));
+std::vector<double> BS_call(const Option &option, double S0, double K, double r, double sigma_0, int Npaths) {
 
-    std::vector<double> result(Npaths);
-
-    for (int i = 0; i < Npaths; ++i) {
-        double d1 = (std::log(S[0][i] / K) + (r + volatility(S[0][i], 0, sigma_0) * volatility(S[0][i], 0, sigma_0) / 2) * T) /
-            (volatility(S[0][i], 0, sigma_0) * std::sqrt(T));
-        double d2 = d1 - volatility(S[0][i], 0, sigma_0) * std::sqrt(T);
-        result[i] = S[0][i] * normalCDF(d1) - K * std::exp(-r * T) * normalCDF(d2);
+    const AsianOption* asianOption = dynamic_cast<const AsianOption*>(&option);
+    if (!asianOption) {
+        throw std::invalid_argument("Option is not an Asian option");
     }
 
-    return result;
+    if (asianOption) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::normal_distribution<double> dist(0.0, 1.0);
+
+        const std::vector<std::vector<double>> S = std::get<2>(SDE_control_timestepper(S0, r, sigma_0, Npaths));
+
+        std::vector<double> result(Npaths);
+
+        for (int i = 0; i < Npaths; ++i) {
+            double d1 = (std::log(S[0][i] / K) + (r + GBMvol(S[0][i], 0, sigma_0) * GBMvol(S[0][i], 0, sigma_0) / 2) * asianOption->getExpiry()) /
+                (GBMvol(S[0][i], 0, sigma_0) * std::sqrt(asianOption->getExpiry()));
+            double d2 = d1 - GBMvol(S[0][i], 0, sigma_0) * std::sqrt(asianOption->getExpiry());
+            result[i] = S[0][i] * normalCDF(d1) - K * std::exp(-r * asianOption->getExpiry()) * normalCDF(d2);
+        }
+
+        return result;
+    }
+}
+
+std::vector<double> BS_put(const Option &option, double S0, double K, double r, double sigma_0, int Npaths) {
+
+    const AsianOption* asianOption = dynamic_cast<const AsianOption*>(&option);
+    if (!asianOption) {
+        throw std::invalid_argument("Option is not an Asian option");
+    }
+
+    if (asianOption) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::normal_distribution<double> dist(0.0, 1.0);
+
+        const std::vector<std::vector<double>> S = std::get<2>(SDE_control_timestepper(S0, r, sigma_0, Npaths));
+
+        std::vector<double> result(Npaths);
+
+        for (int i = 0; i < Npaths; ++i) {
+            double d1 = (std::log(S[0][i] / K) + (r + GBMvol(S[0][i], 0, sigma_0) * GBMvol(S[0][i], 0, sigma_0) / 2) * asianOption->getExpiry()) /
+                (GBMvol(S[0][i], 0, sigma_0) * std::sqrt(asianOption->getExpiry()));
+            double d2 = d1 - GBMvol(S[0][i], 0, sigma_0) * std::sqrt(asianOption->getExpiry());
+            result[i] = K * std::exp(-r * asianOption->getExpiry()) * (1 - normalCDF(d2)) - S[0][i] * (1 - normalCDF(d1));
+        }
+
+        return result;
+    }
 }
 
 
@@ -238,67 +285,78 @@ double calculate_covariance(const std::vector<double>& values1, const std::vecto
 }
 
 // Define the SDE_control_variate_2 function
-double PricingEngine::SDE_control_variate_2(const Option& option, double S0, double K, double T, double r, double sigma_0, int Npaths) {   
-
-    // Compute t, S, Z using SDE_control_timestepper function
-    const auto sde_tuple = SDE_control_timestepper(S0, T, r, sigma_0, Npaths);
-    auto t = std::get<0>(sde_tuple);
-    auto S = std::get<1>(sde_tuple);
-    auto Z = std::get<2>(sde_tuple);
-
-    // Compute mean_ST using BS_call function
-    std::vector<double> mean_ST = BS_call(S0, K, T, r, sigma_0, Npaths);
-
-    // Compute discounted payoff for Asian call and control variate
-    std::vector<double> fST(Npaths);
-    std::vector<double> fZT(Npaths);
-    for (int i = 0; i < Npaths; ++i) {
-        if (option.getType() == Option::Type::Call) {
-            // fST represents an arithmetic mean
-
-            if (asianOption->getAveragingType() == AsianOption::AveragingType::Arithmetic) {
-                fST[i] = std::exp(-r * T) * std::max(std::accumulate(S.begin(), S.end(), 0.0, [i](double sum, const std::vector<double>& path) { return sum + path[i]; }) / S.size() - K, 0.0);
-            }
-            else {
-                double log_sum = 0;
-                for (const auto& path : S) {
-                    log_sum += std::log(path[i]);
-                }
-                fST[i] = std::exp(-r * T) * std::max(std::exp(log_sum / S.size()) - K, 0.0);
-            }
-
-            fZT[i] = std::exp(-r * T) * std::max(Z.back()[i] - K, 0.0);
-        }
-        else {
-            if (asianOption->getAveragingType() == AsianOption::AveragingType::Arithmetic) {
-                fST[i] = std::exp(-r * T) * std::max(K - std::accumulate(S.begin(), S.end(), 0.0, [i](double sum, const std::vector<double>& path) { return sum + path[i]; }) / S.size(), 0.0);
-            }
-            else {
-                double log_sum = 0;
-                for (const auto& path : S) {
-                    log_sum += std::log(path[i]);
-                }
-                fST[i] = std::exp(-r * T) * std::max(K - std::exp(log_sum / S.size()), 0.0);
-            }
-            // Put Option
-            fZT[i] = std::exp(-r * T) * std::max(K - Z.back()[i], 0.0);
-        }
+double PricingEngine::SDE_control_variate_2(const Option& option, double S0, double K, double r, double sigma_0, int Npaths) {   
+const AsianOption* asianOption = dynamic_cast<const AsianOption*>(&option);
+    if (!asianOption) {
+        throw std::invalid_argument("Option is not an Asian option");
     }
 
-    // Compute variance, covariance, and constant c
-    double var_ST = calculate_variance(fZT);
-    double cov_fST_fZT = calculate_covariance(fST, fZT);
-    double c = (var_ST == 0.0) ? 0.0 : cov_fST_fZT / var_ST;
+    if (asianOption) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::normal_distribution<double> dist(0.0, 1.0);
 
-    // Compute f_c
-    std::vector<double> f_c(Npaths);
-    for (int i = 0; i < Npaths; ++i) {
-        f_c[i] = fST[i] - c * (fZT[i] - mean_ST[i]);
+        // Compute t, S, Z using SDE_control_timestepper function
+        const auto sde_tuple = SDE_control_timestepper(S0, r, sigma_0, Npaths);
+        auto t = std::get<0>(sde_tuple);
+        auto S = std::get<1>(sde_tuple);
+        auto Z = std::get<2>(sde_tuple);
+
+        // Compute mean_ST using BS_call function
+        std::vector<double> mean_ST = BS_call(S0, K, r, sigma_0, Npaths);
+
+        // Compute discounted payoff for Asian call and control variate
+        std::vector<double> fST(Npaths);
+        std::vector<double> fZT(Npaths);
+        for (int i = 0; i < Npaths; ++i) {
+            if (option.getType() == Option::Type::Call) {
+                // fST represents an arithmetic mean
+
+                if (asianOption->getAveragingType() == AsianOption::AveragingType::Arithmetic) {
+                    fST[i] = std::exp(-r * asianOption->getExpiry()) * std::max(std::accumulate(S.begin(), S.end(), 0.0, [i](double sum, const std::vector<double>& path) { return sum + path[i]; }) / S.size() - K, 0.0);
+                }
+                else {
+                    double log_sum = 0;
+                    for (const auto& path : S) {
+                        log_sum += std::log(path[i]);
+                    }
+                    fST[i] = std::exp(-r * asianOption->getExpiry()) * std::max(std::exp(log_sum / S.size()) - K, 0.0);
+                }
+
+                fZT[i] = std::exp(-r * asianOption->getExpiry()) * std::max(Z.back()[i] - K, 0.0);
+            }
+            else {
+                if (asianOption->getAveragingType() == AsianOption::AveragingType::Arithmetic) {
+                    fST[i] = std::exp(-r * asianOption->getExpiry()) * std::max(K - std::accumulate(S.begin(), S.end(), 0.0, [i](double sum, const std::vector<double>& path) { return sum + path[i]; }) / S.size(), 0.0);
+                }
+                else {
+                    double log_sum = 0;
+                    for (const auto& path : S) {
+                        log_sum += std::log(path[i]);
+                    }
+                    fST[i] = std::exp(-r * asianOption->getExpiry()) * std::max(K - std::exp(log_sum / S.size()), 0.0);
+                }
+                // Put Option
+                fZT[i] = std::exp(-r * asianOption->getExpiry()) * std::max(K - Z.back()[i], 0.0);
+
+            }
+        }
+
+        // Compute variance, covariance, and constant c
+        double var_ST = calculate_variance(fZT);
+        double cov_fST_fZT = calculate_covariance(fST, fZT);
+        double c = (var_ST == 0.0) ? 0.0 : cov_fST_fZT / var_ST;
+
+        // Compute f_c
+        std::vector<double> f_c(Npaths);
+        for (int i = 0; i < Npaths; ++i) {
+            f_c[i] = fST[i] - c * (fZT[i] - mean_ST[i]);
+        }
+
+        // Compute price and variance
+        double price = std::accumulate(f_c.begin(), f_c.end(), 0.0) / Npaths;
+        return price;
     }
-
-    // Compute price and variance
-    double price = std::accumulate(f_c.begin(), f_c.end(), 0.0) / Npaths;
-    return price;
 }
 
 
