@@ -48,11 +48,11 @@ public:
             AsianOption option(105.0, 1.0, Option::Type::Call, AsianOption::AveragingType::Arithmetic, 10);
             double priceNaive = PricingEngine::calculatePriceNaive(option, 100.0, 0.05, 0.20, numSimulations);
             double priceAntithetic = PricingEngine::calculatePriceAntithetic(option, 100.0, 0.05, 0.20, numSimulations);
-            double priceControlVariate = PricingEngine::SDE_control_variate_2(option, 100.0, 0.05, 0.20, numSimulations);
+            double priceControlVariate = PricingEngine::SDE_control_variate_2(option, 100.0, 105.0, 0.05, 0.20, numSimulations);
             double priceGBM = PricingEngine::calculatePriceGBM(option, 100.0, 0.05, 0.20, numSimulations);
 
             // Write the number of simulations and option prices to the CSV file
-            outfile << std::fixed << std::setprecision(2) << numSimulations << "," << priceNaive << "," << priceAntithetic << "," << timeControlVariate << "," << priceGBM << "\n";
+            outfile << std::fixed << std::setprecision(2) << numSimulations << "," << priceNaive << "," << priceAntithetic << "," << priceControlVariate << "," << priceGBM << "\n";
         }
 
         // Close the opened file
@@ -119,7 +119,7 @@ public:
             
             // Measure computational time for the control variate method
             auto startControlVariate = std::chrono::high_resolution_clock::now();
-            PricingEngine::SDE_control_variate_2(option, 100.0, 0.05, 0.20, numSimulations);
+            PricingEngine::SDE_control_variate_2(option, 100.0, 105.0, 0.05, 0.20, numSimulations);
             auto endControlVariate = std::chrono::high_resolution_clock::now();
             auto timeControlVariate = std::chrono::duration_cast<std::chrono::microseconds>(endControlVariate - startControlVariate).count();
 
@@ -146,7 +146,7 @@ public:
             AsianOption option(105.0, 1.0, Option::Type::Call, AsianOption::AveragingType::Arithmetic, 10);
             double priceNaive = PricingEngine::calculatePriceNaive(option, 100.0, 0.05, 0.20, numSimulations);
             double priceAntithetic = PricingEngine::calculatePriceAntithetic(option, 100.0, 0.05, 0.20, numSimulations);
-            double priceControlVariate = PricingEngine::SDE_control_variate_2(option, 100.0, 0.05, 0.20, numSimulations);
+            double priceControlVariate = PricingEngine::SDE_control_variate_2(option, 100.0, 105.0, 0.05, 0.20, numSimulations);
             double priceGBM = PricingEngine::calculatePriceGBM(option, 100.0, 0.05, 0.20, numSimulations);
 
             double priceDiffNaive = std::abs(priceNaive - priceGBM);
