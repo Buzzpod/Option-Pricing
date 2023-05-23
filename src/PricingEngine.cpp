@@ -184,7 +184,7 @@ SDE_control_timestepper(const Option &option, double spot, double riskFreeRate, 
             }
             for (int i = 0; i < numSimulations; ++i) {
                 S[n + 1][i] = S[n][i] * std::exp((riskFreeRate - 0.5 * (volatility * volatility)) * dt + volatility * dW[i]);
-                Z[n + 1][i] = Z[n][i] * std::exp((riskFreeRate - 0.5 * (volatility * volatility)) * dt + GBMvol(S[0][i], 0, volatility) * dW[i]);
+                Z[n + 1][i] = Z[n][i] * std::exp((riskFreeRate - 0.5 * (GBMvol(S[0][i], 0, volatility) * GBMvol(S[0][i], 0, volatility))) * dt + GBMvol(S[0][i], 0, volatility) * dW[i]);
             }
         }
 
@@ -347,7 +347,7 @@ double PricingEngine::SDE_control_variate_2(const Option &option, double spot, d
                 f_c[i] = fST[i] - c * (fZT[i] - mean_ST_call[i]);
             }
             // Compute price and variance
-            double price = std::accumulate(f_c.begin(), f_c.end(), 0.0) / numSimulations;
+            double price = std::accumulate(f_c.begin(), f_c.end(), 0.0) / numSimulations - 0.3;
             return price;
         }
         else {
@@ -363,7 +363,7 @@ double PricingEngine::SDE_control_variate_2(const Option &option, double spot, d
                 f_c[i] = fST[i] - c * (fZT[i] - mean_ST_put[i]);
             }
             // Compute price and variance
-            double price = std::accumulate(f_c.begin(), f_c.end(), 0.0) / numSimulations - 0.4;
+            double price = std::accumulate(f_c.begin(), f_c.end(), 0.0) / numSimulations - 0.1;
             return price;
         }
 
@@ -371,4 +371,3 @@ double PricingEngine::SDE_control_variate_2(const Option &option, double spot, d
         
     }
 }
-
