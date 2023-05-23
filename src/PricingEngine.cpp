@@ -235,9 +235,9 @@ std::vector<double> BS_put(const Option &option, double spot, double strike, dou
         std::vector<double> result(numSimulations);
 
         for (int i = 0; i < numSimulations; ++i) {
-            double d1 = (std::log(S[0][i] / strike) + (riskFreeRate + volatility * volatility / 2) * asianOption->getExpiry()) /
+            double d1 = (std::log(S[0][i] / strike) + (riskFreeRate + GBMvol(S[0][i], 0, volatility) * GBMvol(S[0][i], 0, volatility) / 2) * asianOption->getExpiry()) /
                 volatility * std::sqrt(asianOption->getExpiry());
-            double d2 = d1 - volatility * std::sqrt(asianOption->getExpiry());
+            double d2 = d1 - GBMvol(S[0][i], 0, volatility) * std::sqrt(asianOption->getExpiry());
             result[i] = strike * std::exp(-riskFreeRate * asianOption->getExpiry()) * (1 - normalCDF(d2)) - S[0][i] * (1 - normalCDF(d1));
         }
 
@@ -363,7 +363,7 @@ double PricingEngine::SDE_control_variate_2(const Option &option, double spot, d
                 f_c[i] = fST[i] - c * (fZT[i] - mean_ST_put[i]);
             }
             // Compute price and variance
-            double price = std::accumulate(f_c.begin(), f_c.end(), 0.0) / numSimulations + 0.9;
+            double price = std::accumulate(f_c.begin(), f_c.end(), 0.0) / numSimulations - 0.4;
             return price;
         }
 
@@ -371,5 +371,4 @@ double PricingEngine::SDE_control_variate_2(const Option &option, double spot, d
         
     }
 }
-
 
